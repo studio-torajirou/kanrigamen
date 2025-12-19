@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
   
   <script>
-    // GASのウェブアプリURL（重複のない正しいもの）
+    // GASのウェブアプリURL
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwzn7oJAsoc20JyOw77EjbYwWCHHj1DBkIqrCreacNu-KX5l5k8Gx3JEZTlow7P9I3K6g/exec";
 
     // パスワード設定
@@ -17,44 +17,43 @@
   </script>
 
   <style>
-    /* ▼▼▼ GitHub用 パスワード画面のスタイル ▼▼▼ */
+    /* ▼▼▼ GitHub用 パスワード画面 ▼▼▼ */
     #authOverlay {
       position: fixed; inset: 0; z-index: 9999;
-      background: #fff0f5; /* GAS側の背景色に合わせました */
+      background: #fff0f5; 
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.3s;
     }
     .auth-box {
       background: #ffffff; padding: 40px; border-radius: 24px;
       box-shadow: 0 8px 24px rgba(233, 30, 99, 0.1);
-      text-align: center; width: 90%; max-width: 500px;
+      text-align: center; width: 90%; max-width: 400px;
     }
-    .auth-title { font-size: 32px; font-weight: bold; color: #442c2e; margin-bottom: 20px; }
+    .auth-title { font-size: 24px; font-weight: bold; color: #442c2e; margin-bottom: 20px; }
     .auth-input { 
-      font-size: 32px; padding: 12px; width: 100%; border: 2px solid #f0d0d8; 
+      font-size: 24px; padding: 12px; width: 100%; border: 2px solid #f0d0d8; 
       border-radius: 12px; margin-bottom: 20px; text-align: center; letter-spacing: 4px;
     }
     .auth-btn {
       background: linear-gradient(135deg, #ff91b4, #ec407a); color: #fff;
-      border: none; padding: 12px 32px; font-size: 24px; border-radius: 999px;
+      border: none; padding: 12px 32px; font-size: 18px; border-radius: 999px;
       cursor: pointer; width: 100%; font-weight: bold;
     }
 
-    /* ▼▼▼ ここから下がGASの styles.html の内容です ▼▼▼ */
-    /* ★変更：女性らしく優しい配色とフォント設定 */
+    /* ▼▼▼ スタイル設定（スマホ最適化済み） ▼▼▼ */
     :root {
       --bg: #fff0f5;             /* 背景：ごく薄いピンク */
       --bg-card: #ffffff;        /* カード：白 */
-      --ink: #442c2e;            /* 文字：きつい黒ではなく濃いブラウン系 */
+      --ink: #442c2e;            /* 文字：濃いブラウン */
       --ink-muted: #886064;      /* 薄い文字：あずき色グレー */
-      --accent: #ff91b4;         /* アクセント：明るく優しいピンク */
+      --accent: #ff91b4;         /* アクセント：明るいピンク */
       --accent-deep: #e91e63;    /* 濃いアクセント：しっかりしたピンク */
       --accent-soft: #ffe4ee;    /* 薄いアクセント：淡いピンク */
       --line: #f0d0d8;           /* 線：ピンクベージュ */
-      --danger: #ef5350;         /* 削除色：少しマイルドな赤 */
-      --radius-lg: 24px;         /* 角丸：より大きく丸く */
-      --shadow-soft: 0 8px 24px rgba(233, 30, 99, 0.08); /* 影：ピンクがかったふんわりした影 */
-      --font-main: "M PLUS Rounded 1c", "Hiragino Maru Gothic Pro", "Yu Gothic", sans-serif;
+      --danger: #ef5350;         /* 削除色：マイルドな赤 */
+      --radius-lg: 16px;         /* 角丸 */
+      --shadow-soft: 0 4px 16px rgba(233, 30, 99, 0.08);
+      --font-main: "M PLUS Rounded 1c", sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -64,118 +63,110 @@
       background: radial-gradient(circle at top left, #fff0f6, #fffbfd 60%, #ffffff);
       color: var(--ink);
       -webkit-font-smoothing: antialiased;
-      font-size: 40px; /* ★GAS側の設定通り大きくしています */
-      line-height: 1.8;
+      font-size: 16px; /* ★修正: 40px -> 16px (スマホ標準サイズ) */
+      line-height: 1.6;
     }
 
     /* レイアウト */
     .hd { position: sticky; top: 0; z-index: 10; background: rgba(255, 240, 245, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 2px 10px rgba(233, 30, 99, 0.05); }
-    .hd-inner { max-width: 960px; margin: 0 auto; padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .hd-title-block { display: flex; flex-direction: column; gap: 4px; }
-    .hd-title { margin: 0; font-size: 48px; font-weight: 700; color: var(--accent-deep); }
-    .hd-subtitle { margin: 0; font-size: 38px; color: var(--ink-muted); }
+    .hd-inner { max-width: 960px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .hd-title-block { display: flex; flex-direction: column; gap: 2px; }
+    .hd-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--accent-deep); }
+    .hd-subtitle { margin: 0; font-size: 12px; color: var(--ink-muted); }
     .hd-actions { display: flex; align-items: center; gap: 8px; }
-    .main { max-width: 960px; margin: 0 auto; padding: 20px 12px 24px; }
-    .ft { max-width: 960px; margin: 0 auto; padding: 16px 12px 32px; text-align: center; font-size: 40px; color: var(--ink-muted); }
+    
+    .main { max-width: 960px; margin: 0 auto; padding: 16px 12px 24px; }
+    .ft { max-width: 960px; margin: 0 auto; padding: 16px 12px 32px; text-align: center; font-size: 12px; color: var(--ink-muted); }
 
     /* カード */
-    .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 16px; margin-bottom: 24px; border: 1px solid #fff; }
-    .card-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
-    .card-title-block { display: flex; flex-direction: column; gap: 4px; }
-    .card-title { margin: 0; font-size: 52px; font-weight: 700; color: var(--ink); }
-    .card-subtitle { margin: 0; font-size: 40px; color: var(--ink-muted); }
+    .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 16px; margin-bottom: 16px; border: 1px solid #fff; }
+    .card-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .card-title-block { display: flex; flex-direction: column; gap: 2px; }
+    .card-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .card-subtitle { margin: 0; font-size: 13px; color: var(--ink-muted); }
     .card-actions { display: flex; gap: 8px; }
     .card-bd { margin-bottom: 12px; }
-    .card-ft { border-top: 2px dashed var(--line); padding-top: 16px; }
+    .card-ft { border-top: 2px dashed var(--line); padding-top: 12px; }
 
     /* グリッド */
-    .grid { display: grid; gap: 16px; }
+    .grid { display: grid; gap: 12px; }
     .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
     /* フィールド */
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; font-size: 36px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; font-size: 14px; }
     .field > span { color: var(--ink-muted); font-weight: 500; }
-    .field input, .field textarea { border-radius: 16px; border: 2px solid var(--line); padding: 12px 14px; font-size: 32px; font-family: var(--font-main); outline: none; transition: all 0.2s ease; background-color: #ffffff; color: var(--ink); }
-    .field textarea { resize: vertical; min-height: 120px; }
+    .field input, .field textarea { border-radius: 8px; border: 2px solid var(--line); padding: 10px; font-size: 16px; font-family: var(--font-main); outline: none; transition: all 0.2s ease; background-color: #ffffff; color: var(--ink); }
+    .field textarea { resize: vertical; min-height: 80px; }
     .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255, 145, 180, 0.2); background-color: #fff9fb; }
     .field input:disabled { background-color: #f0f0f0; color: #999; border-color: #ddd; }
 
     /* ボタン */
-    .btn, .btn-outline, .btn-danger { border-radius: 999px; border: none; font-size: 38px; padding: 12px 32px; cursor: pointer; font-family: var(--font-main); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; transition: transform 0.1s ease, box-shadow 0.2s ease, filter 0.2s ease; }
+    .btn, .btn-outline, .btn-danger { border-radius: 999px; border: none; font-size: 14px; padding: 10px 20px; cursor: pointer; font-family: var(--font-main); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; transition: transform 0.1s ease, box-shadow 0.2s ease; }
     .btn { background: linear-gradient(135deg, #ff91b4, #ec407a); color: #ffffff; box-shadow: 0 4px 10px rgba(236, 64, 122, 0.4); }
     .btn-outline { background: #ffffff; border: 2px solid var(--accent); color: var(--accent-deep); }
     .btn-danger { background: var(--danger); color: #ffffff; box-shadow: 0 4px 10px rgba(239, 83, 80, 0.3); }
     .btn:active, .btn-outline:active, .btn-danger:active { transform: scale(0.96); box-shadow: none; }
 
     /* カレンダー */
-    .calendar-wrapper { padding: 8px 4px 0; }
+    .calendar-wrapper { padding: 4px 0 0; }
     .calendar-grid { display: flex; flex-direction: column; gap: 4px; }
     .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-    .cal-row-head { margin-bottom: 0; }
-    .cal-cell { min-height: 300px; background: #ffffff; border-radius: 12px; border: 1px solid var(--line); padding: 4px; font-size: 24px; position: relative; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-    .cal-cell-head { background: transparent; border: none; text-align: center; font-size: 24px; font-weight: 700; color: var(--ink-muted); min-height: auto; box-shadow: none; padding-bottom: 8px; }
+    .cal-row-head { margin-bottom: 4px; }
+    .cal-cell { 
+      min-height: 100px; /* ★修正: 300px -> 100px */
+      background: #ffffff; border-radius: 8px; border: 1px solid var(--line); padding: 4px; font-size: 12px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+    }
+    .cal-cell-head { background: transparent; border: none; text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); min-height: auto; box-shadow: none; padding-bottom: 4px; }
     .cal-cell-empty { background: transparent; border: none; box-shadow: none; }
-    .cal-day-label { font-size: 44px; font-weight: 700; padding-left: 4px; color: var(--ink); }
-    .cal-cell-today { border: 3px solid var(--accent); background-color: #fff0f5; }
-    .cal-cell-selected { box-shadow: 0 0 0 3px rgba(255, 145, 180, 0.6); transform: scale(0.98); transition: transform 0.1s; }
+    .cal-day-label { font-size: 16px; font-weight: 700; padding-left: 2px; color: var(--ink); }
+    .cal-cell-today { border: 2px solid var(--accent); background-color: #fff0f5; }
+    .cal-cell-selected { box-shadow: 0 0 0 2px rgba(255, 145, 180, 0.6); transform: scale(0.98); transition: transform 0.1s; }
     .cal-cell-has-lesson { background: linear-gradient(to bottom, #fff9fb, #ffffff); }
-    .cal-tags { margin-top: 4px; display: flex; flex-direction: column; gap: 4px; }
+    .cal-tags { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
 
     /* レッスンタグ */
-    .cal-tag { border-radius: 8px; padding: 2px 6px; font-size: 30px; line-height: 1.4; color: #ffffff; background: var(--accent); display: block; width: 100%; box-sizing: border-box; max-width: 100%; max-height: none; white-space: normal; word-break: break-word; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-    /* 新規客アラート */
-    @keyframes blink-alert {
-      0% { border-color: #FFD700; box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); transform: scale(1); }
-      50% { border-color: #FF8C00; box-shadow: 0 0 12px 6px rgba(255, 140, 0, 0.6); transform: scale(1.03); }
-      100% { border-color: #FFD700; box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); transform: scale(1); }
-    }
-    .cal-tag.new-customer {
-      animation: blink-alert 1.2s infinite ease-in-out;
-      border: 3px solid #FF8C00 !important;
-      position: relative;
-      z-index: 2;
-    }
+    .cal-tag { border-radius: 4px; padding: 2px 4px; font-size: 10px; line-height: 1.2; color: #ffffff; background: var(--accent); display: block; width: 100%; box-sizing: border-box; max-width: 100%; white-space: normal; word-break: break-word; }
+    .cal-tag.new-customer { border: 2px solid #FF8C00 !important; z-index: 2; position: relative; }
 
     /* 日パネル */
     .day-panel { margin-top: 12px; }
-    .day-panel-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-    .day-label-caption { margin: 0; font-size: 40px; color: var(--ink-muted); }
-    .day-label-main { margin: 0; font-size: 32px; font-weight: 700; color: var(--ink); }
+    .day-panel-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .day-label-caption { margin: 0; font-size: 12px; color: var(--ink-muted); }
+    .day-label-main { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
     .day-panel-actions { display: flex; gap: 6px; }
 
     /* レッスン枠カード */
-    .slot-list { display: flex; flex-direction: column; gap: 12px; }
-    .slot-card { border-radius: 16px; border: 1px solid var(--line); background: #ffffff; padding: 12px 14px; font-size: 36px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-    .slot-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1); }
+    .slot-list { display: flex; flex-direction: column; gap: 8px; }
+    .slot-card { border-radius: 12px; border: 1px solid var(--line); background: #ffffff; padding: 12px; font-size: 14px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    .slot-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(233, 30, 99, 0.1); }
     .slot-card-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
-    .slot-card-title { font-weight: 700; font-size: 28px; color: var(--ink); }
-    .slot-card-time { font-size: 36px; color: var(--accent-deep); font-weight: 700; }
-    .slot-card-bd { margin-top: 6px; }
-    .slot-card-desc { margin: 0; font-size: 40px; color: var(--ink-muted); }
-    .slot-card-price { margin: 4px 0 0; font-size: 24px; color: var(--ink); font-weight: 500; }
+    .slot-card-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+    .slot-card-time { font-size: 16px; color: var(--accent-deep); font-weight: 700; }
+    .slot-card-bd { margin-top: 4px; }
+    .slot-card-desc { margin: 0; font-size: 12px; color: var(--ink-muted); }
+    .slot-card-price { margin: 4px 0 0; font-size: 13px; color: var(--ink); font-weight: 500; }
 
     /* パッケージカード */
-    .package-list { display: flex; flex-direction: column; gap: 12px; }
-    .package-card { border-radius: 16px; border: 1px solid var(--line); background: #ffffff; padding: 12px 14px; font-size: 36px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-    .package-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1); }
+    .package-list { display: flex; flex-direction: column; gap: 8px; }
+    .package-card { border-radius: 12px; border: 1px solid var(--line); background: #ffffff; padding: 12px; font-size: 14px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    .package-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(233, 30, 99, 0.1); }
     .package-card--select { border: 2px dashed var(--accent); background-color: #fffbfd; }
     .package-card-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
-    .package-card-title { font-weight: 700; font-size: 28px; color: var(--ink); }
-    .package-card-price { font-size: 36px; color: var(--accent-deep); font-weight: 700; }
-    .package-card-bd { margin-top: 6px; }
-    .package-card-desc { margin: 0; font-size: 40px; color: var(--ink-muted); }
+    .package-card-title { font-weight: 700; font-size: 15px; color: var(--ink); }
+    .package-card-price { font-size: 16px; color: var(--accent-deep); font-weight: 700; }
+    .package-card-bd { margin-top: 4px; }
+    .package-card-desc { margin: 0; font-size: 12px; color: var(--ink-muted); }
 
-    .package-summary { margin: 0 0 8px; font-size: 36px; font-weight: 700; color: var(--ink); padding-bottom: 8px; border-bottom: 2px dashed var(--line); }
-    .subtle-text { font-size: 40px; color: var(--ink-muted); margin: 0 0 12px; }
-    .empty-text { font-size: 40px; color: var(--ink-muted); margin: 8px 0; text-align: center; }
+    .package-summary { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--ink); padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
+    .subtle-text { font-size: 13px; color: var(--ink-muted); margin: 0 0 12px; }
+    .empty-text { font-size: 13px; color: var(--ink-muted); margin: 8px 0; text-align: center; }
 
     /* モーダル */
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(68, 44, 46, 0.4); backdrop-filter: blur(4px); z-index: 20; padding: 10px; }
-    .modal-card { background: #ffffff; border-radius: 24px; max-width: 420px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 20px; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-card { background: #ffffff; border-radius: 24px; max-width: 420px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 20px; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; max-height: 90vh; }
     @keyframes modalPop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-    /* 全画面モーダル */
+    /* 全画面モーダル対応 */
     #packageModal .modal-card, 
     #slotModal .modal-card, 
     #helpModal .modal-card,
@@ -183,57 +174,42 @@
     #settingsModal .modal-card,
     #customerListModal .modal-card,
     #customerHistoryModal .modal-card { 
-      max-width: 100vw; width: 100vw; max-height: 100vh; height: 100vh; 
-      border-radius: 0; display: flex; flex-direction: column; 
+      height: 90vh; /* スマホで全画面になりすぎないように調整 */
     }
-    #packageModal .modal-bd, 
-    #slotModal .modal-bd, 
-    #helpModal .modal-bd,
-    #packageSelectModal .modal-bd,
-    #settingsModal .modal-bd,
-    #customerListModal .modal-bd,
-    #customerHistoryModal .modal-bd { 
-      flex: 1; max-height: none; overflow-y: auto; 
-    }
-
-    .modal-card--lg { max-width: 500px; }
-    .modal-card--alert { max-width: 400px; border-radius: 24px; padding: 30px 20px; background: #fff; border: 4px solid var(--line); }
-    .modal-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
-    .modal-hd strong { font-size: 34px; font-weight: 700; color: var(--accent-deep); }
-    .modal-bd { font-size: 28px; max-height: 60vh; overflow-y: auto; line-height: 1.6; }
-    .modal-ft { margin-top: 16px; padding-top: 10px; }
-    .modal-close { border: none; background: transparent; font-size: 52px; line-height: 1; cursor: pointer; padding: 0 8px; color: var(--ink-muted); transition: color 0.2s; }
-    .modal-close:hover { color: var(--accent); }
+    
+    .modal-card--alert { max-width: 320px; height: auto !important; padding: 20px; border-radius: 16px; border: 4px solid var(--line); }
+    
+    .modal-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; flex-shrink: 0; }
+    .modal-hd strong { font-size: 18px; font-weight: 700; color: var(--accent-deep); }
+    .modal-bd { font-size: 14px; overflow-y: auto; line-height: 1.6; flex: 1; }
+    .modal-ft { margin-top: 16px; padding-top: 10px; flex-shrink: 0; }
+    .modal-close { border: none; background: transparent; font-size: 28px; line-height: 1; cursor: pointer; padding: 0 8px; color: var(--ink-muted); }
 
     /* ヘルプ */
-    .help-content { font-size: 26px; line-height: 1.8; color: var(--ink); text-align: left; }
-    .help-heading { font-size: 32px; font-weight: 700; color: var(--accent-deep); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+    .help-content { font-size: 14px; line-height: 1.8; color: var(--ink); text-align: left; }
+    .help-heading { font-size: 16px; font-weight: 700; color: var(--accent-deep); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
     .help-item { margin-bottom: 24px; }
-    .help-item h4 { font-size: 28px; font-weight: 700; color: var(--ink); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
-    .help-item h4::before { content: ''; display: inline-block; width: 8px; height: 24px; background: var(--accent); border-radius: 4px; }
+    .help-item h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+    .help-item h4::before { content: ''; display: inline-block; width: 6px; height: 18px; background: var(--accent); border-radius: 4px; }
     .help-item p { margin: 0; }
-    .help-divider { border: 0; border-top: 2px dashed var(--line); margin: 32px 0; }
 
     /* 予約者リスト */
     .guest-list { list-style: none; padding: 0; margin: 0; }
-    .guest-item { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 28px; color: var(--ink); }
+    .guest-item { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink); }
     .guest-item:last-child { border-bottom: none; }
-    .loading-text { color: var(--ink-muted); font-size: 24px; text-align: center; }
-    .error-text { color: var(--danger); font-size: 24px; text-align: center; }
+    .loading-text { color: var(--ink-muted); font-size: 14px; text-align: center; }
+    .error-text { color: var(--danger); font-size: 14px; text-align: center; }
 
-    /* ローディングオーバーレイ */
+    /* ローディング & トースト */
     .loading-overlay { position: fixed; inset: 0; background: rgba(255, 240, 245, 0.7); display: none; align-items: center; justify-content: center; z-index: 30; backdrop-filter: blur(5px); }
-    .loading-spinner { width: 50px; height: 50px; border-radius: 50%; border: 5px solid #f8bbd0; border-top-color: #ec407a; animation: spin 1s linear infinite; }
+    .loading-spinner { width: 40px; height: 40px; border-radius: 50%; border: 4px solid #f8bbd0; border-top-color: #ec407a; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* トースト */
-    .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(40px); background: rgba(68, 44, 46, 0.9); color: #ffffff; padding: 10px 24px; font-size: 36px; border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 40; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(40px); background: rgba(68, 44, 46, 0.9); color: #ffffff; padding: 10px 24px; font-size: 14px; border-radius: 999px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 40; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .toast.is-show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* スマホ調整 */
     @media (max-width: 600px) {
       .hd-inner, .main, .ft { padding-left: 12px; padding-right: 12px; }
-      .card { padding: 14px; }
+      .card { padding: 12px; }
     }
   </style>
 </head>
@@ -242,10 +218,10 @@
   <div id="authOverlay">
     <div class="auth-box">
       <div class="auth-title">🔒 管理者ログイン</div>
-      <p style="margin-bottom:10px; font-size:20px; color:#888;">パスワードを入力してください</p>
+      <p style="margin-bottom:10px; font-size:14px; color:#888;">パスワードを入力してください</p>
       <input type="password" id="passInput" class="auth-input" inputmode="numeric" placeholder="●●●●">
       <button class="auth-btn" onclick="checkPassword()">認証する</button>
-      <p id="passError" style="color:#ef5350; margin-top:10px; font-weight:bold; display:none; font-size:20px;">パスワードが違います</p>
+      <p id="passError" style="color:#ef5350; margin-top:10px; font-weight:bold; display:none; font-size:14px;">パスワードが違います</p>
     </div>
   </div>
 
@@ -256,8 +232,8 @@
   <div id="customAlertModal" class="modal" style="display:none; z-index:9999;" role="dialog" aria-modal="true">
     <div class="modal-card modal-card--alert">
       <div class="modal-bd" style="text-align:center; padding: 20px 10px;">
-        <p id="customAlertMessage" style="font-size:32px; font-weight:bold; color:var(--ink); margin:0 0 20px; white-space: pre-wrap;"></p>
-        <button class="btn" type="button" onclick="closeCustomAlert()" style="min-width: 160px;">OK</button>
+        <p id="customAlertMessage" style="font-size:16px; font-weight:bold; color:var(--ink); margin:0 0 20px; white-space: pre-wrap;"></p>
+        <button class="btn" type="button" onclick="closeCustomAlert()" style="min-width: 120px;">OK</button>
       </div>
     </div>
   </div>
@@ -375,7 +351,7 @@
       <div class="modal-bd">
         <div style="margin-bottom:16px;">
           <input id="customerSearchInput" type="text" placeholder="名前や電話番号で検索..." 
-                 style="width:100%; padding:16px; font-size:24px; border:2px solid var(--line); border-radius:12px; outline:none;">
+                 style="width:100%; padding:12px; font-size:16px; border:2px solid var(--line); border-radius:12px; outline:none;">
         </div>
         <p id="customerListMsg" class="subtle-text" style="text-align:center; display:none;">データなし</p>
         <ul id="customerListUL" class="guest-list"></ul>
@@ -506,7 +482,7 @@
           <label class="field">
             <span>料金（円）</span>
             <input id="slotPrice" type="number" min="0" inputmode="numeric" />
-            <span id="priceLockMsg" style="font-size:20px; color:var(--danger); display:none;">※予約済みのため変更不可</span>
+            <span id="priceLockMsg" style="font-size:12px; color:var(--danger); display:none;">※予約済みのため変更不可</span>
           </label>
           <label class="field">
             <span>定員（人）</span>
@@ -521,8 +497,8 @@
         </label>
 
         <div id="slotGuestSection" style="display:none; margin-top:24px; border-top:2px dashed var(--line); padding-top:16px;">
-          <p style="font-size:32px; font-weight:bold; color:var(--ink); margin-bottom:12px;">予約済みのお客様</p>
-          <p style="font-size:24px; color:var(--ink-muted); margin-bottom:8px;">タップして詳細を確認できます</p>
+          <p style="font-size:16px; font-weight:bold; color:var(--ink); margin-bottom:8px;">予約済みのお客様</p>
+          <p style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">タップして詳細を確認できます</p>
           <ul id="slotGuestList" class="guest-list"></ul>
         </div>
 
@@ -700,11 +676,10 @@
     }
     window.alert = function(message) { openCustomAlert(message); };
 
-    // ★追加：顧客リスト・履歴モーダルの開閉関数
+    // 顧客リスト・履歴モーダルの開閉関数
     function adminOpenCustomerList(){
       var m = document.getElementById('customerListModal');
       if(m) m.style.display = 'flex';
-      // もし既にJSで実装済みならここでデータロードなどを呼ぶ
       if(typeof renderCustomerList === 'function') renderCustomerList();
     }
     function adminCloseCustomerList(){
@@ -734,7 +709,7 @@
       if(e.key === 'Enter') checkPassword();
     });
 
-    // ★ GitHub用 API通信関数 (google.script.run の代わり)
+    // API通信関数
     function gas(actionName, payload) {
       if(!GAS_API_URL || GAS_API_URL.indexOf('script.google.com') === -1) {
         alert('GAS_API_URLが設定されていません。index.htmlのソースコードを確認してください。');
@@ -797,7 +772,7 @@
     packages: [],
     settings: {}, 
     dom: {},
-    customerList: [] // 顧客リストキャッシュ用
+    customerList: []
   };
 
   document.addEventListener('DOMContentLoaded', function(){
@@ -828,15 +803,12 @@
     var btnNewPackage = document.getElementById('btnNewPackage');
     if(btnNewPackage) btnNewPackage.addEventListener('click', adminOpenPackageModalNew);
 
-    // 顧客検索イベント
     var searchInput = document.getElementById('customerSearchInput');
     if(searchInput){
       searchInput.addEventListener('input', function(){
         filterCustomerList(this.value);
       });
     }
-    
-    // ※初期ロードはパスワード認証後に呼び出すのでここでは呼ばない
   });
 
   function applyAdminInit(data){
@@ -1546,8 +1518,8 @@
     ADMIN_PACKAGE_COLOR_PRESETS.forEach(function(col){
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.style.width = '66px';
-      btn.style.height = '66px';
+      btn.style.width = '44px'; /* ★修正: 66px -> 44px */
+      btn.style.height = '44px';
       btn.style.borderRadius = '999px';
       btn.style.border = '1px solid rgba(0,0,0,0.25)';
       btn.style.padding = '0';
@@ -1566,9 +1538,9 @@
         mark.textContent = '✓';
         mark.style.display = 'inline-block';
         mark.style.color = '#ffffff';
-        mark.style.fontSize = '42px';
+        mark.style.fontSize = '24px'; /* ★修正: 42px -> 24px */
         mark.style.fontWeight = '700';
-        mark.style.lineHeight = '66px';
+        mark.style.lineHeight = '44px';
         mark.style.textAlign = 'center';
         mark.style.width = '100%';
         mark.style.height = '100%';
@@ -1596,9 +1568,9 @@
         mark.textContent = '✓';
         mark.style.display = 'inline-block';
         mark.style.color = '#ffffff';
-        mark.style.fontSize = '42px';
+        mark.style.fontSize = '24px';
         mark.style.fontWeight = '700';
-        mark.style.lineHeight = '66px';
+        mark.style.lineHeight = '44px';
         mark.style.textAlign = 'center';
         mark.style.width = '100%';
         mark.style.height = '100%';
@@ -1936,8 +1908,8 @@
     ADMIN_COLOR_PRESETS.forEach(function(col){
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.style.width = '66px';
-      btn.style.height = '66px';
+      btn.style.width = '44px'; /* ★修正: 66px -> 44px */
+      btn.style.height = '44px';
       btn.style.borderRadius = '999px';
       btn.style.border = '1px solid rgba(0,0,0,0.25)';
       btn.style.padding = '0';
@@ -1959,9 +1931,9 @@
         } else {
           mark.style.color = '#ffffff';
         }
-        mark.style.fontSize = '42px';
+        mark.style.fontSize = '24px'; /* ★修正: 42px -> 24px */
         mark.style.fontWeight = '700';
-        mark.style.lineHeight = '66px';
+        mark.style.lineHeight = '44px';
         mark.style.textAlign = 'center';
         mark.style.width = '100%';
         mark.style.height = '100%';
@@ -1992,9 +1964,9 @@
           mark.style.color = '#ffffff';
         }
         
-        mark.style.fontSize = '42px';
+        mark.style.fontSize = '24px';
         mark.style.fontWeight = '700';
-        mark.style.lineHeight = '66px';
+        mark.style.lineHeight = '44px';
         mark.style.textAlign = 'center';
         mark.style.width = '100%';
         mark.style.height = '100%';
