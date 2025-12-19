@@ -63,7 +63,7 @@
       background: radial-gradient(circle at top left, #fff0f6, #fffbfd 60%, #ffffff);
       color: var(--ink);
       -webkit-font-smoothing: antialiased;
-      font-size: 16px; /* ★修正: 40px -> 16px (スマホ標準サイズ) */
+      font-size: 16px;
       line-height: 1.6;
     }
 
@@ -113,7 +113,7 @@
     .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
     .cal-row-head { margin-bottom: 4px; }
     .cal-cell { 
-      min-height: 100px; /* ★修正: 300px -> 100px */
+      min-height: 100px;
       background: #ffffff; border-radius: 8px; border: 1px solid var(--line); padding: 4px; font-size: 12px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
     }
     .cal-cell-head { background: transparent; border: none; text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); min-height: auto; box-shadow: none; padding-bottom: 4px; }
@@ -174,7 +174,7 @@
     #settingsModal .modal-card,
     #customerListModal .modal-card,
     #customerHistoryModal .modal-card { 
-      height: 90vh; /* スマホで全画面になりすぎないように調整 */
+      height: 90vh; 
     }
     
     .modal-card--alert { max-width: 320px; height: auto !important; padding: 20px; border-radius: 16px; border: 4px solid var(--line); }
@@ -1256,6 +1256,49 @@
   </script>
 
   <script>
+  // ★追加：設定ボタン用関数
+  function adminOpenSettings(){
+    var s = adminState.settings || {};
+    (document.getElementById('setStudioName')||{}).value = s.studioName || '';
+    (document.getElementById('setConcept')||{}).value = s.concept || '';
+    (document.getElementById('setAddress')||{}).value = s.address || '';
+    (document.getElementById('setContactEmail')||{}).value = s.contactEmail || '';
+    (document.getElementById('setFacilities')||{}).value = s.facilities || '';
+    
+    document.getElementById('settingsModal').style.display = 'flex';
+  }
+
+  function adminCloseSettings(){
+    document.getElementById('settingsModal').style.display = 'none';
+  }
+
+  function adminSaveSettings(){
+    var payload = {
+      studioName: document.getElementById('setStudioName').value,
+      concept: document.getElementById('setConcept').value,
+      address: document.getElementById('setAddress').value,
+      contactEmail: document.getElementById('setContactEmail').value,
+      facilities: document.getElementById('setFacilities').value
+    };
+
+    var btn = document.getElementById('btnSaveSettings');
+    var originalText = btn.textContent;
+    btn.textContent = '保存中...';
+    btn.disabled = true;
+
+    gas('apiSaveSettings', payload).then(function(){
+      showToast('スタジオ情報を更新しました');
+      adminState.settings = payload; // ローカル更新
+      btn.textContent = originalText;
+      btn.disabled = false;
+      adminCloseSettings();
+    }).catch(function(err){
+      alert('保存に失敗しました');
+      btn.textContent = originalText;
+      btn.disabled = false;
+    });
+  }
+
   function adminOpenHelp(){
     var modal = document.getElementById('helpModal');
     if(modal) modal.style.display = 'flex';
