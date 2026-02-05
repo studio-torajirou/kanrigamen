@@ -7,571 +7,37 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <script>
-    // GASのウェブアプリURL
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwzn7oJAsoc20JyOw77EjbYwWCHHj1DBkIqrCreacNu-KX5l5k8Gx3JEZTlow7P9I3K6g/exec";
-
-    // パスワード設定
-    const ADMIN_PASSWORD = "0126"; 
-  </script>
-
-  <style>
-    /* ▼▼▼ GitHub用 パスワード画面 ▼▼▼ */
-    #authOverlay {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #fff0f5; 
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.3s;
-    }
-    .auth-box {
-      background: #ffffff; padding: 40px; border-radius: 24px;
-      box-shadow: 0 8px 24px rgba(233, 30, 99, 0.1);
-      text-align: center; width: 90%; max-width: 400px;
-    }
-    .auth-title { font-size: 24px; font-weight: bold; color: #442c2e; margin-bottom: 20px; }
-    .auth-input { 
-      font-size: 24px; padding: 12px; width: 100%; border: 2px solid #f0d0d8; 
-      border-radius: 12px; margin-bottom: 20px; text-align: center; letter-spacing: 4px;
-    }
-    .auth-btn {
-      background: linear-gradient(135deg, #ff91b4, #ec407a); color: #fff;
-      border: none; padding: 12px 32px; font-size: 18px; border-radius: 999px;
-      cursor: pointer; width: 100%; font-weight: bold;
-    }
-
-    /* ▼▼▼ スタイル設定（スマホ最適化済み） ▼▼▼ */
-    :root {
-      --bg: #fff0f5;             /* 背景：ごく薄いピンク */
-      --bg-card: #ffffff;        /* カード：白 */
-      --ink: #442c2e;            /* 文字：濃いブラウン */
-      --ink-muted: #886064;      /* 薄い文字：あずき色グレー */
-      --accent: #ff91b4;         /* アクセント：明るいピンク */
-      --accent-deep: #e91e63;    /* 濃いアクセント：しっかりしたピンク */
-      --accent-soft: #ffe4ee;    /* 薄いアクセント：淡いピンク */
-      --line: #f0d0d8;           /* 線：ピンクベージュ */
-      --danger: #ef5350;         /* 削除色：マイルドな赤 */
-      --radius-lg: 16px;         /* 角丸 */
-      --shadow-soft: 0 4px 16px rgba(233, 30, 99, 0.08);
-      --font-main: "M PLUS Rounded 1c", sans-serif;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; height: 100%; }
-    body {
-      font-family: var(--font-main);
-      background: radial-gradient(circle at top left, #fff0f6, #fffbfd 60%, #ffffff);
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    /* レイアウト */
-    .hd { position: sticky; top: 0; z-index: 10; background: rgba(255, 240, 245, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 2px 10px rgba(233, 30, 99, 0.05); }
-    .hd-inner { max-width: 960px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .hd-title-block { display: flex; flex-direction: column; gap: 2px; }
-    .hd-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--accent-deep); }
-    .hd-subtitle { margin: 0; font-size: 12px; color: var(--ink-muted); }
-    .hd-actions { display: flex; align-items: center; gap: 8px; }
-    
-    .main { max-width: 960px; margin: 0 auto; padding: 16px 12px 24px; }
-    .ft { max-width: 960px; margin: 0 auto; padding: 16px 12px 32px; text-align: center; font-size: 12px; color: var(--ink-muted); }
-
-    /* カード */
-    .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 16px; margin-bottom: 16px; border: 1px solid #fff; }
-    .card-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-    .card-title-block { display: flex; flex-direction: column; gap: 2px; }
-    .card-title { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
-    .card-subtitle { margin: 0; font-size: 13px; color: var(--ink-muted); }
-    .card-actions { display: flex; gap: 8px; }
-    .card-bd { margin-bottom: 12px; }
-    .card-ft { border-top: 2px dashed var(--line); padding-top: 12px; }
-
-    /* グリッド */
-    .grid { display: grid; gap: 12px; }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-    /* フィールド */
-    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; font-size: 14px; }
-    .field > span { color: var(--ink-muted); font-weight: 500; }
-    .field input, .field textarea { border-radius: 8px; border: 2px solid var(--line); padding: 10px; font-size: 16px; font-family: var(--font-main); outline: none; transition: all 0.2s ease; background-color: #ffffff; color: var(--ink); }
-    .field textarea { resize: vertical; min-height: 80px; }
-    .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255, 145, 180, 0.2); background-color: #fff9fb; }
-    .field input:disabled { background-color: #f0f0f0; color: #999; border-color: #ddd; }
-
-    /* ボタン */
-    .btn, .btn-outline, .btn-danger { border-radius: 999px; border: none; font-size: 14px; padding: 10px 20px; cursor: pointer; font-family: var(--font-main); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; transition: transform 0.1s ease, box-shadow 0.2s ease; }
-    .btn { background: linear-gradient(135deg, #ff91b4, #ec407a); color: #ffffff; box-shadow: 0 4px 10px rgba(236, 64, 122, 0.4); }
-    .btn-outline { background: #ffffff; border: 2px solid var(--accent); color: var(--accent-deep); }
-    .btn-danger { background: var(--danger); color: #ffffff; box-shadow: 0 4px 10px rgba(239, 83, 80, 0.3); }
-    .btn:active, .btn-outline:active, .btn-danger:active { transform: scale(0.96); box-shadow: none; }
-
-    /* カレンダー */
-    .calendar-wrapper { padding: 4px 0 0; }
-    .calendar-grid { display: flex; flex-direction: column; gap: 4px; }
-    .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-    .cal-row-head { margin-bottom: 4px; }
-    .cal-cell { 
-      min-height: 100px;
-      background: #ffffff; border-radius: 8px; border: 1px solid var(--line); padding: 4px; font-size: 12px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
-    }
-    .cal-cell-head { background: transparent; border: none; text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-muted); min-height: auto; box-shadow: none; padding-bottom: 4px; }
-    .cal-cell-empty { background: transparent; border: none; box-shadow: none; }
-    .cal-day-label { font-size: 16px; font-weight: 700; padding-left: 2px; color: var(--ink); }
-    .cal-cell-today { border: 2px solid var(--accent); background-color: #fff0f5; }
-    .cal-cell-selected { box-shadow: 0 0 0 2px rgba(255, 145, 180, 0.6); transform: scale(0.98); transition: transform 0.1s; }
-    .cal-cell-has-lesson { background: linear-gradient(to bottom, #fff9fb, #ffffff); }
-    .cal-tags { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
-
-    /* レッスンタグ */
-    .cal-tag { border-radius: 4px; padding: 2px 4px; font-size: 10px; line-height: 1.2; color: #ffffff; background: var(--accent); display: block; width: 100%; box-sizing: border-box; max-width: 100%; white-space: normal; word-break: break-word; }
-    .cal-tag.new-customer { border: 2px solid #FF8C00 !important; z-index: 2; position: relative; }
-
-    /* 日パネル */
-    .day-panel { margin-top: 12px; }
-    .day-panel-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-    .day-label-caption { margin: 0; font-size: 12px; color: var(--ink-muted); }
-    .day-label-main { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
-    .day-panel-actions { display: flex; gap: 6px; }
-
-    /* レッスン枠カード */
-    .slot-list { display: flex; flex-direction: column; gap: 8px; }
-    .slot-card { border-radius: 12px; border: 1px solid var(--line); background: #ffffff; padding: 12px; font-size: 14px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-    .slot-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(233, 30, 99, 0.1); }
-    .slot-card-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
-    .slot-card-title { font-weight: 700; font-size: 15px; color: var(--ink); }
-    .slot-card-time { font-size: 16px; color: var(--accent-deep); font-weight: 700; }
-    .slot-card-bd { margin-top: 4px; }
-    .slot-card-desc { margin: 0; font-size: 12px; color: var(--ink-muted); }
-    .slot-card-price { margin: 4px 0 0; font-size: 13px; color: var(--ink); font-weight: 500; }
-
-    /* パッケージカード */
-    .package-list { display: flex; flex-direction: column; gap: 8px; }
-    .package-card { border-radius: 12px; border: 1px solid var(--line); background: #ffffff; padding: 12px; font-size: 14px; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-    .package-card:hover { background-color: #fffafc; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(233, 30, 99, 0.1); }
-    .package-card--select { border: 2px dashed var(--accent); background-color: #fffbfd; }
-    .package-card-hd { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
-    .package-card-title { font-weight: 700; font-size: 15px; color: var(--ink); }
-    .package-card-price { font-size: 16px; color: var(--accent-deep); font-weight: 700; }
-    .package-card-bd { margin-top: 4px; }
-    .package-card-desc { margin: 0; font-size: 12px; color: var(--ink-muted); }
-
-    .package-summary { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: var(--ink); padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
-    .subtle-text { font-size: 13px; color: var(--ink-muted); margin: 0 0 12px; }
-    .empty-text { font-size: 13px; color: var(--ink-muted); margin: 8px 0; text-align: center; }
-
-    /* モーダル */
-    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(68, 44, 46, 0.4); backdrop-filter: blur(4px); z-index: 20; padding: 10px; }
-    .modal-card { background: #ffffff; border-radius: 24px; max-width: 420px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 20px; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; max-height: 90vh; }
-    @keyframes modalPop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-    /* 全画面モーダル対応 */
-    #packageModal .modal-card, 
-    #slotModal .modal-card, 
-    #helpModal .modal-card,
-    #packageSelectModal .modal-card,
-    #settingsModal .modal-card,
-    #customerListModal .modal-card,
-    #customerHistoryModal .modal-card { 
-      height: 90vh; 
-    }
-    
-    .modal-card--alert { max-width: 320px; height: auto !important; padding: 20px; border-radius: 16px; border: 4px solid var(--line); }
-    
-    .modal-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--bg); padding-bottom: 10px; flex-shrink: 0; }
-    .modal-hd strong { font-size: 18px; font-weight: 700; color: var(--accent-deep); }
-    .modal-bd { font-size: 14px; overflow-y: auto; line-height: 1.6; flex: 1; }
-    .modal-ft { margin-top: 16px; padding-top: 10px; flex-shrink: 0; }
-    .modal-close { border: none; background: transparent; font-size: 28px; line-height: 1; cursor: pointer; padding: 0 8px; color: var(--ink-muted); }
-
-    /* ヘルプ */
-    .help-content { font-size: 14px; line-height: 1.8; color: var(--ink); text-align: left; }
-    .help-heading { font-size: 16px; font-weight: 700; color: var(--accent-deep); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
-    .help-item { margin-bottom: 24px; }
-    .help-item h4 { font-size: 15px; font-weight: 700; color: var(--ink); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
-    .help-item h4::before { content: ''; display: inline-block; width: 6px; height: 18px; background: var(--accent); border-radius: 4px; }
-    .help-item p { margin: 0; }
-
-    /* 予約者リスト */
-    .guest-list { list-style: none; padding: 0; margin: 0; }
-    .guest-item { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink); }
-    .guest-item:last-child { border-bottom: none; }
-    .loading-text { color: var(--ink-muted); font-size: 14px; text-align: center; }
-    .error-text { color: var(--danger); font-size: 14px; text-align: center; }
-
-    /* ローディング & トースト */
-    .loading-overlay { position: fixed; inset: 0; background: rgba(255, 240, 245, 0.7); display: none; align-items: center; justify-content: center; z-index: 30; backdrop-filter: blur(5px); }
-    .loading-spinner { width: 40px; height: 40px; border-radius: 50%; border: 4px solid #f8bbd0; border-top-color: #ec407a; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(40px); background: rgba(68, 44, 46, 0.9); color: #ffffff; padding: 10px 24px; font-size: 14px; border-radius: 999px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 40; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .toast.is-show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (max-width: 600px) {
-      .hd-inner, .main, .ft { padding-left: 12px; padding-right: 12px; }
-      .card { padding: 12px; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <div id="authOverlay">
-    <div class="auth-box">
-      <div class="auth-title">🔒 管理者ログイン</div>
-      <p style="margin-bottom:10px; font-size:14px; color:#888;">パスワードを入力してください</p>
-      <input type="password" id="passInput" class="auth-input" inputmode="numeric" placeholder="●●●●">
-      <button class="auth-btn" onclick="checkPassword()">認証する</button>
-      <p id="passError" style="color:#ef5350; margin-top:10px; font-weight:bold; display:none; font-size:14px;">パスワードが違います</p>
-    </div>
-  </div>
 
   <div id="loadingOverlay" class="loading-overlay" style="display:none;">
     <div class="loading-spinner"></div>
   </div>
 
-  <div id="customAlertModal" class="modal" style="display:none; z-index:9999;" role="dialog" aria-modal="true">
+  <div id="toast" class="toast"></div>
+
+  <div id="customAlertModal" class="modal" style="display:none; z-index:10000;" role="dialog" aria-modal="true">
     <div class="modal-card modal-card--alert">
-      <div class="modal-bd" style="text-align:center; padding: 20px 10px;">
-        <p id="customAlertMessage" style="font-size:16px; font-weight:bold; color:var(--ink); margin:0 0 20px; white-space: pre-wrap;"></p>
-        <button class="btn" type="button" onclick="closeCustomAlert()" style="min-width: 120px;">OK</button>
+      <div class="modal-bd" style="text-align:center; padding: 24px;">
+        <p id="customAlertMessage" style="font-size:24px; font-weight:bold; color:var(--ink); margin:0 0 24px; white-space: pre-wrap; line-height:1.5;"></p>
+        <button class="btn" type="button" onclick="document.getElementById('customAlertModal').style.display='none'" style="min-width: 160px;">OK</button>
       </div>
     </div>
   </div>
 
-  <div id="helpModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card modal-card--lg">
-      <div class="modal-hd">
-        <strong class="help-title">操作マニュアル</strong>
-        <button class="modal-close" type="button" onclick="adminCloseHelp()" aria-label="ヘルプを閉じる">×</button>
-      </div>
-      <div class="modal-bd help-content">
-        <section class="help-section">
-          <h3 class="help-heading">📌 はじめに（パッケージの作成）</h3>
-          <div class="help-item">
-            <p>レッスンを登録する前に、まず<strong>「レッスンパッケージ」</strong>を作成します。<br>
-            これはレッスンの雛形（テンプレート）です。<br><br>
-            1. 画面下の<strong>「レッスンパッケージ」</strong>セクションへ移動します。<br>
-            2. <strong>「新しいパッケージを登録」</strong>ボタンを押します。<br>
-            3. レッスン名、先生名、料金、定員などを入力して保存します。<br>
-            ※よく使うレッスンパターンを複数登録しておくと便利です。</p>
-          </div>
-        </section>
-        <section class="help-section">
-          <h3 class="help-heading">🗓 スケジュールの登録方法</h3>
-          <div class="help-item">
-            <h4>1. 日付を選ぶ</h4>
-            <p>カレンダー上の<strong>「レッスンを入れたい日付」</strong>をタップします。</p>
-          </div>
-          <div class="help-item">
-            <h4>2. パッケージを選ぶ</h4>
-            <p>登録済みのパッケージ一覧が表示されるので、追加したいレッスンを選びます。</p>
-          </div>
-          <div class="help-item">
-            <h4>3. 時間を決めて保存</h4>
-            <p>開始時刻と終了時刻を入力し、<strong>「保存する」</strong>を押すとカレンダーに反映されます。<br>
-            ※この画面で、その日だけの特別料金や定員に変更することも可能です。</p>
-          </div>
-        </section>
-        <section class="help-section">
-          <h3 class="help-heading">📋 予約確認・変更・削除</h3>
-          <div class="help-item">
-            <h4>予約の確認</h4>
-            <p>カレンダー内のレッスン枠をタップすると、編集画面が開きます。<br>
-            画面下部に<strong>「予約済みのお客様」</strong>のお名前と電話番号が表示されます。</p>
-          </div>
-          <div class="help-item">
-            <h4>編集・削除のルール</h4>
-            <p><strong>予約が1名でも入っている場合：</strong><br>
-            トラブル防止のため、<strong>「料金の変更」</strong>はできません。<br>
-            また、現在の予約数より少なくなるような<strong>「定員の変更」</strong>もできません。<br><br>
-            ※予約が入っていないレッスンは自由に削除・変更が可能です。</p>
-          </div>
-        </section>
-        <section class="help-section">
-          <h3 class="help-heading">🏠 スタジオ情報の変更</h3>
-          <div class="help-item">
-            <p>画面一番下の<strong>「スタジオ情報・設定」</strong>から、ユーザー画面に表示される以下の情報をいつでも変更できます。<br>
-            ・スタジオ名<br>
-            ・紹介文 (Concept)<br>
-            ・住所 (Googleマップが自動更新されます)<br>
-            ・お問い合わせメールアドレス<br>
-            ・設備情報</p>
-          </div>
-        </section>
-      </div>
-      <div class="modal-ft">
-        <button class="btn" type="button" onclick="adminCloseHelp()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="settingsModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card modal-card--lg">
-      <div class="modal-hd">
-        <strong class="help-title">スタジオ情報の編集</strong>
-        <button class="modal-close" type="button" onclick="adminCloseSettings()" aria-label="閉じる">×</button>
+  <div id="authModal" class="modal" style="display:flex;">
+    <div class="modal-card" style="max-width:350px;">
+      <div class="modal-hd" style="justify-content:center; border-bottom:none; padding-bottom:0;">
+        <strong>管理者認証</strong>
       </div>
       <div class="modal-bd">
-        <p class="subtle-text">ユーザー画面の「About Studio」に表示される内容を編集します。</p>
-        <label class="field">
-          <span>スタジオ名</span>
-          <input id="setStudioName" type="text" placeholder="Studio Torajiro" />
-        </label>
-        <label class="field">
-          <span>Concept (紹介文)</span>
-          <textarea id="setConcept" rows="6" placeholder="スタジオの魅力やコンセプトを入力してください..."></textarea>
-        </label>
-        <label class="field">
-          <span>住所 (Googleマップが自動連動します)</span>
-          <input id="setAddress" type="text" placeholder="東京都千代田区..." />
-        </label>
-        <label class="field">
-          <span>お問い合わせ先メールアドレス</span>
-          <input id="setContactEmail" type="email" placeholder="info@example.com" />
-          <span style="font-size:12px; color:#888;">※ ユーザー画面に表示され、お客様がここへメールを送れるようになります。</span>
-        </label>
-        <label class="field">
-          <span>設備・サービス</span>
-          <input id="setFacilities" type="text" placeholder="更衣室あり / マット無料" />
-        </label>
+        <p style="text-align:center; margin-bottom:15px; color:var(--ink-muted); font-size:20px;">パスワードを入力してください</p>
+        <input type="tel" id="adminPassInput" class="field" style="width:100%; padding:16px; font-size:32px; text-align:center; letter-spacing:4px; border-radius:16px; border:2px solid var(--line);" placeholder="••••">
+        <p id="authError">パスワードが違います</p>
       </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn-outline" type="button" onclick="adminCloseSettings()">キャンセル</button>
-        <button id="btnSaveSettings" class="btn" type="button" onclick="adminSaveSettings()">保存して反映</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="customerListModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card modal-card--lg">
-      <div class="modal-hd">
-        <strong>顧客台帳リスト</strong>
-        <button class="modal-close" type="button" onclick="adminCloseCustomerList()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <div style="margin-bottom:16px;">
-          <input id="customerSearchInput" type="text" placeholder="名前や電話番号で検索..." 
-                 style="width:100%; padding:12px; font-size:16px; border:2px solid var(--line); border-radius:12px; outline:none;">
-        </div>
-        <p id="customerListMsg" class="subtle-text" style="text-align:center; display:none;">データなし</p>
-        <ul id="customerListUL" class="guest-list"></ul>
-      </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn" type="button" onclick="adminCloseCustomerList()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="customerHistoryModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card modal-card--lg">
-      <div class="modal-hd">
-        <strong>来店・予約履歴</strong>
-        <button class="modal-close" type="button" onclick="adminCloseCustomerHistory()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <p id="historyCustomerName" class="subtle-text" style="border-bottom:2px dashed var(--line); padding-bottom:8px; margin-bottom:16px;">- 様 の履歴</p>
-        <ul id="customerHistoryUL" class="guest-list"></ul>
-      </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn" type="button" onclick="adminCloseCustomerHistory()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="packageModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-hd">
-        <strong id="packageModalTitle">レッスンパッケージの登録</strong>
-        <button class="modal-close" type="button" onclick="adminClosePackageModal()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <input type="hidden" id="packageId" />
-        <label class="field">
-          <span>レッスン名</span>
-          <input id="packageLessonName" type="text" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span>先生名</span>
-          <input id="packageTeacherName" type="text" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span>レッスン内容</span>
-          <textarea id="packageDescription" rows="4"></textarea>
-        </label>
-        <div class="grid grid-2">
-          <label class="field">
-            <span>料金（円）</span>
-            <input id="packagePrice" type="number" min="0" inputmode="numeric" />
-          </label>
-          <label class="field">
-            <span>定員（人）</span>
-            <input id="packageCapacity" type="number" min="0" inputmode="numeric" />
-          </label>
-        </div>
-        <label class="field">
-          <span>標準色</span>
-          <input id="packageColor" type="hidden" />
-          <div id="packageColorPalette" class="color-palette"></div>
-        </label>
-      </div>
-      <div class="modal-ft" style="display:flex;justify-content:space-between;gap:8px;">
-        <button id="packageDeleteBtn" class="btn-outline" type="button" style="display:none;">このパッケージを削除</button>
-        <div style="flex:1;text-align:right;">
-          <button class="btn-outline" type="button" onclick="adminClosePackageModal()">キャンセル</button>
-          <button id="packageSaveBtn" class="btn" type="button">保存する</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="packageDeleteModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-hd">
-        <strong>パッケージの削除</strong>
-      </div>
-      <div class="modal-bd">
-        <p>このパッケージを削除しますか？<br />既に作成したレッスン枠には影響しません。</p>
-      </div>
-      <div class="modal-ft" style="display:flex;justify-content:flex-end;gap:8px;">
-        <button class="btn-outline" type="button" onclick="adminClosePackageDeleteModal()">キャンセル</button>
-        <button id="packageDeleteConfirmBtn" class="btn-danger" type="button">削除する</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="packageSelectModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card modal-card--lg">
-      <div class="modal-hd">
-        <strong>レッスンパッケージを選択</strong>
-        <button class="modal-close" type="button" onclick="adminClosePackageSelectModal()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <p id="packageSelectDateLabel" class="subtle-text"></p>
-        <div id="packageSelectList" class="package-list"></div>
-        <p class="hint">※ パッケージは下部の「レッスンパッケージ」から追加・編集できます。</p>
-      </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn-outline" type="button" onclick="adminClosePackageSelectModal()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="slotModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-hd">
-        <strong id="slotModalTitle">レッスン枠の登録</strong>
-        <button class="modal-close" type="button" onclick="adminCloseSlotModal()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <input type="hidden" id="slotId" />
-        <p id="slotPackageSummary" class="package-summary"></p>
-        <p id="slotDateLabel" class="subtle-text"></p>
-
-        <div class="grid grid-2">
-          <label class="field">
-            <span>開始時刻</span>
-            <input id="slotStartTime" type="time" />
-          </label>
-          <label class="field">
-            <span>終了時刻</span>
-            <input id="slotEndTime" type="time" />
-          </label>
-        </div>
-
-        <div class="grid grid-2">
-          <label class="field">
-            <span>料金（円）</span>
-            <input id="slotPrice" type="number" min="0" inputmode="numeric" />
-            <span id="priceLockMsg" style="font-size:12px; color:var(--danger); display:none;">※予約済みのため変更不可</span>
-          </label>
-          <label class="field">
-            <span>定員（人）</span>
-            <input id="slotCapacity" type="number" min="0" inputmode="numeric" />
-          </label>
-        </div>
-
-        <label class="field">
-          <span>カレンダーの色</span>
-          <input id="slotColor" type="hidden" />
-          <div id="slotColorPalette" class="color-palette"></div>
-        </label>
-
-        <div id="slotGuestSection" style="display:none; margin-top:24px; border-top:2px dashed var(--line); padding-top:16px;">
-          <p style="font-size:16px; font-weight:bold; color:var(--ink); margin-bottom:8px;">予約済みのお客様</p>
-          <p style="font-size:12px; color:var(--ink-muted); margin-bottom:8px;">タップして詳細を確認できます</p>
-          <ul id="slotGuestList" class="guest-list"></ul>
-        </div>
-
-      </div>
-      <div class="modal-ft" style="display:flex;justify-content:space-between;gap:8px;">
-        <button id="slotDeleteBtn" class="btn-outline" type="button" style="display:none;">削除</button>
-        <div style="flex:1;text-align:right;">
-          <button class="btn-outline" type="button" onclick="adminCloseSlotModal()">キャンセル</button>
-          <button id="slotSaveBtn" class="btn" type="button">保存する</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="guestDetailModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-hd">
-        <strong>お客様詳細</strong>
-        <button class="modal-close" type="button" onclick="adminCloseGuestDetailModal()" aria-label="閉じる">×</button>
-      </div>
-      <div class="modal-bd">
-        <label class="field">
-          <span>お名前</span>
-          <input id="guestName" type="text" readonly disabled />
-        </label>
-        <label class="field">
-          <span>電話番号</span>
-          <a id="guestPhoneLink" href="#" style="display:none;"></a>
-          <input id="guestPhone" type="text" readonly disabled />
-        </label>
-        <label class="field">
-          <span>メールアドレス</span>
-          <input id="guestEmail" type="text" readonly disabled />
-        </label>
-        
-        <div class="grid grid-2">
-           <label class="field">
-             <span>来店回数</span>
-             <input id="guestVisitCount" type="text" readonly disabled />
-           </label>
-           <label class="field">
-             <span>顧客ID</span>
-             <input id="guestCustomerId" type="text" readonly disabled />
-           </label>
-        </div>
-
-        <label class="field">
-          <span>備考 (メモ)</span>
-          <textarea id="guestMemo" rows="3" readonly disabled></textarea>
-        </label>
-
-        <div style="margin-top:16px; text-align:center;">
-           <button id="btnGuestHistoryFromDetail" class="btn-outline" type="button" style="width:100%;">過去の履歴を見る</button>
-        </div>
-
-      </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn" type="button" onclick="adminCloseGuestDetailModal()">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="slotDeleteModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-hd">
-        <strong>レッスン枠の削除</strong>
-      </div>
-      <div class="modal-bd">
-        <p>このレッスン枠を削除しますか？</p>
-      </div>
-      <div class="modal-ft" style="text-align:right;">
-        <button class="btn-outline" type="button" onclick="adminCloseSlotDeleteModal()">キャンセル</button>
-        <button id="slotDeleteConfirmBtn" class="btn-danger" type="button">削除する</button>
+      <div class="modal-ft" style="justify-content:center; padding-top:0; border-top:none; background:transparent;">
+        <button id="btnAdminLogin" class="btn" type="button" style="width:100%;">ログイン</button>
       </div>
     </div>
   </div>
@@ -580,7 +46,7 @@
     <div class="hd-inner">
       <div class="hd-title-block">
         <h1 class="hd-title">スタジオ寅次郎 予約管理</h1>
-        <p class="hd-subtitle">カレンダーからレッスンを登録・編集できます</p>
+        <p class="hd-subtitle">スケジュール登録・顧客管理</p>
       </div>
       <div class="hd-actions">
         <button id="btnHelp" class="btn-outline" type="button">使い方</button>
@@ -596,13 +62,15 @@
         </div>
         <div class="card-actions">
           <button id="monthPrev" class="btn-outline" type="button">◀</button>
-          <span id="monthLabel" class="month-label"></span>
+          <span id="monthLabel" class="month-label">----/--</span>
           <button id="monthNext" class="btn-outline" type="button">▶</button>
         </div>
       </div>
+      
       <div class="card-bd calendar-wrapper">
-        <div class="calendar-grid" id="calendarGrid" aria-label="レッスンカレンダー"></div>
+        <div class="cal-grid" id="calendarGrid"></div>
       </div>
+
       <div class="card-ft day-panel">
         <div class="day-panel-hd">
           <div>
@@ -621,10 +89,10 @@
       <div class="card-hd">
         <div class="card-title-block">
           <h2 class="card-title">レッスンパッケージ</h2>
-          <p class="card-subtitle">レッスン名・先生・内容・料金をまとめて管理します</p>
+          <p class="card-subtitle">レッスンの雛形（テンプレート）を管理</p>
         </div>
         <div class="card-actions">
-          <button id="btnNewPackage" class="btn" type="button">新しいパッケージを登録</button>
+          <button id="btnNewPackage" class="btn" type="button">＋ 新規登録</button>
         </div>
       </div>
       <div class="card-bd">
@@ -632,1411 +100,284 @@
       </div>
     </section>
 
-    <section class="card">
-      <div class="card-hd">
-        <div class="card-title-block">
+    <div class="grid grid-2">
+      <section class="card" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;" onclick="adminOpenCustomerList()">
+        <div>
           <h2 class="card-title">顧客台帳</h2>
-          <p class="card-subtitle">お客様の情報や過去の履歴を確認します</p>
+          <p class="card-subtitle">顧客情報・履歴の確認</p>
         </div>
-        <div class="card-actions">
-          <button class="btn" type="button" onclick="adminOpenCustomerList()">顧客リストを開く</button>
-        </div>
-      </div>
-    </section>
+        <span style="font-size:40px;">👥</span>
+      </section>
 
-    <section class="card">
-      <div class="card-hd">
-        <div class="card-title-block">
-          <h2 class="card-title">スタジオ情報・設定</h2>
-          <p class="card-subtitle">ユーザー画面に表示される住所や紹介文を編集します</p>
+      <section class="card" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;" onclick="adminOpenSettings()">
+        <div>
+          <h2 class="card-title">スタジオ設定</h2>
+          <p class="card-subtitle">住所や紹介文の編集</p>
         </div>
-        <div class="card-actions">
-          <button class="btn" type="button" onclick="adminOpenSettings()">情報を編集する</button>
-        </div>
-      </div>
-    </section>
+        <span style="font-size:40px;">⚙️</span>
+      </section>
+    </div>
   </main>
 
   <footer class="ft">
     <small>© スタジオ寅次郎予約システム</small>
   </footer>
 
-  <script>
-    function openCustomAlert(msg) {
-      var modal = document.getElementById('customAlertModal');
-      var msgEl = document.getElementById('customAlertMessage');
-      if (modal && msgEl) {
-        msgEl.textContent = msg;
-        modal.style.display = 'flex';
-      }
-    }
-    function closeCustomAlert() {
-      var modal = document.getElementById('customAlertModal');
-      if (modal) modal.style.display = 'none';
-    }
-    window.alert = function(message) { openCustomAlert(message); };
-
-    // 顧客リスト・履歴モーダルの開閉関数
-    function adminOpenCustomerList(){
-      var m = document.getElementById('customerListModal');
-      if(m) m.style.display = 'flex';
-      if(typeof renderCustomerList === 'function') renderCustomerList();
-    }
-    function adminCloseCustomerList(){
-      var m = document.getElementById('customerListModal');
-      if(m) m.style.display = 'none';
-    }
-    function adminCloseCustomerHistory(){
-      var m = document.getElementById('customerHistoryModal');
-      if(m) m.style.display = 'none';
-    }
-
-    // パスワード認証機能
-    function checkPassword() {
-      const input = document.getElementById('passInput');
-      const err = document.getElementById('passError');
-      if (input.value === ADMIN_PASSWORD) {
-        document.getElementById('authOverlay').style.opacity = '0';
-        setTimeout(() => { document.getElementById('authOverlay').style.display = 'none'; }, 300);
-        // 初回ロード
-        gas('apiGetAdminInit').then(function(data){ applyAdminInit(data); }).catch(function(err){ console.error(err); });
-      } else {
-        err.style.display = 'block';
-        input.value = '';
-      }
-    }
-    document.getElementById('passInput').addEventListener('keypress', function(e){
-      if(e.key === 'Enter') checkPassword();
-    });
-
-    // API通信関数
-    function gas(actionName, payload) {
-      if(!GAS_API_URL || GAS_API_URL.indexOf('script.google.com') === -1) {
-        alert('GAS_API_URLが設定されていません。index.htmlのソースコードを確認してください。');
-        return Promise.reject('No API URL');
-      }
-
-      setLoading(true);
-      return new Promise(function(resolve, reject){
-        fetch(GAS_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: actionName, payload: payload })
-        })
-        .then(function(response){ return response.json(); })
-        .then(function(result){
-          setLoading(false);
-          if (result.error) {
-            throw new Error(result.error);
-          }
-          resolve(result);
-        })
-        .catch(function(err){
-          setLoading(false);
-          console.error("API Error:", err);
-          alert('通信エラー: ' + err.message);
-          reject(err);
-        });
-      });
-    }
-
-    function setLoading(flag){
-      var ov = document.getElementById('loadingOverlay');
-      if(!ov) return;
-      ov.style.display = flag ? 'flex' : 'none';
-    }
-
-    var toastTimer = null;
-    function showToast(message){
-      var el = document.getElementById('toast');
-      if(!el){
-        el = document.createElement('div');
-        el.id = 'toast';
-        el.className = 'toast';
-        document.body.appendChild(el);
-      }
-      el.textContent = message || '';
-      el.classList.add('is-show');
-      if(toastTimer){ clearTimeout(toastTimer); }
-      toastTimer = setTimeout(function(){ el.classList.remove('is-show'); }, 2500);
-    }
-  </script>
-
-  <script>
-  var adminState = {
-    today: null,
-    currentYear: null,
-    currentMonth: null,
-    selectedDate: null,
-    lessons: [],
-    packages: [],
-    settings: {}, 
-    dom: {},
-    customerList: []
-  };
-
-  document.addEventListener('DOMContentLoaded', function(){
-    adminState.dom.monthLabel        = document.getElementById('monthLabel');
-    adminState.dom.calendarGrid      = document.getElementById('calendarGrid');
-    adminState.dom.selectedDateLabel = document.getElementById('selectedDateLabel');
-    adminState.dom.slotList          = document.getElementById('slotList');
-    adminState.dom.packageList       = document.getElementById('packageList');
-
-    var btnPrev = document.getElementById('monthPrev');
-    if(btnPrev) btnPrev.addEventListener('click', function(){ changeMonth(-1); });
-    var btnNext = document.getElementById('monthNext');
-    if(btnNext) btnNext.addEventListener('click', function(){ changeMonth(1); });
-
-    var btnHelp = document.getElementById('btnHelp');
-    if(btnHelp) btnHelp.addEventListener('click', adminOpenHelp);
-
-    var btnAddSlot = document.getElementById('btnAddSlot');
-    if(btnAddSlot){
-      btnAddSlot.addEventListener('click', function(){
-        if(!adminState.selectedDate){ alert('日付を選択してください。'); return; }
-        if(typeof adminOpenPackageSelect === 'function'){
-          adminOpenPackageSelect(adminState.selectedDate);
-        }
-      });
-    }
-
-    var btnNewPackage = document.getElementById('btnNewPackage');
-    if(btnNewPackage) btnNewPackage.addEventListener('click', adminOpenPackageModalNew);
-
-    var searchInput = document.getElementById('customerSearchInput');
-    if(searchInput){
-      searchInput.addEventListener('input', function(){
-        filterCustomerList(this.value);
-      });
-    }
-  });
-
-  function applyAdminInit(data){
-    if(!data) return;
-    adminState.today = data.today || null;
-    adminState.lessons = Array.isArray(data.lessons) ? data.lessons : [];
-    adminState.packages = Array.isArray(data.packages) ? data.packages : [];
-    adminState.settings = data.settings || {}; 
-
-    var y = null;
-    var m = null;
-    if(adminState.today){
-      var parts = adminState.today.split('-');
-      if(parts.length >= 2){
-        y = parseInt(parts[0], 10);
-        m = parseInt(parts[1], 10);
-      }
-    }
-    if(!y || !m){
-      var now = new Date();
-      y = now.getFullYear();
-      m = now.getMonth() + 1;
-    }
-    adminState.currentYear = y;
-    adminState.currentMonth = m;
-    adminState.selectedDate = adminState.today;
-
-    renderMonth();
-    updateSelectedDateLabel();
-    renderSlotListForSelectedDate();
-    renderPackageList();
-  }
-
-  function changeMonth(diff){
-    if(typeof diff !== 'number') diff = 0;
-    var y = adminState.currentYear;
-    var m = adminState.currentMonth;
-    if(!y || !m) return;
-    m += diff;
-    if(m <= 0){ m += 12; y -= 1; }
-    else if(m >= 13){ m -= 12; y += 1; }
-    adminState.currentYear = y;
-    adminState.currentMonth = m;
-    renderMonth();
-  }
-
-  function isLightColor(hex) {
-    if (!hex) return false;
-    if (hex.startsWith('#')) hex = hex.slice(1);
-    if (hex.length === 3) hex = hex.split('').map(function(c){ return c+c; }).join('');
-    
-    var r = parseInt(hex.substr(0, 2), 16);
-    var g = parseInt(hex.substr(2, 2), 16);
-    var b = parseInt(hex.substr(4, 2), 16);
-    var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return yiq >= 200;
-  }
-
-  function renderMonth(){
-    var grid = adminState.dom.calendarGrid;
-    if(!grid) return;
-    grid.innerHTML = '';
-    var year = adminState.currentYear;
-    var month = adminState.currentMonth;
-    if(!year || !month) return;
-
-    var weekdays = ['日','月','火','水','木','金','土'];
-    var headerRow = document.createElement('div');
-    headerRow.className = 'cal-row cal-row-head';
-    weekdays.forEach(function(w){
-      var cell = document.createElement('div');
-      cell.className = 'cal-cell cal-cell-head';
-      cell.textContent = w;
-      headerRow.appendChild(cell);
-    });
-    grid.appendChild(headerRow);
-
-    var firstDate = new Date(year, month - 1, 1);
-    var firstDow = firstDate.getDay();
-    var lastDate = new Date(year, month, 0).getDate();
-
-    if(adminState.dom.monthLabel) adminState.dom.monthLabel.textContent = year + '年' + month + '月';
-    var lessonMap = {};
-    adminState.lessons.forEach(function(lesson){
-      var d = lesson.date;
-      if(!d) return;
-      if(!lessonMap[d]) lessonMap[d] = [];
-      lessonMap[d].push(lesson);
-    });
-
-    var dayNum = 1;
-    for(var row = 0; row < 6; row++){
-      var rowEl = document.createElement('div');
-      rowEl.className = 'cal-row';
-      var rowHasDate = false;
-
-      for(var col = 0; col < 7; col++){
-        var cell = document.createElement('div');
-        cell.className = 'cal-cell';
-
-        var cellIndex = row * 7 + col;
-        var dateStr = '';
-        if(cellIndex >= firstDow && dayNum <= lastDate){
-          var rowHasDate = true;
-          var d = dayNum;
-          var dStr = year + '-' + ('0' + month).slice(-2) + '-' + ('0' + d).slice(-2);
-          dateStr = dStr;
-
-          var dayLabel = document.createElement('div');
-          dayLabel.className = 'cal-day-label';
-          dayLabel.textContent = d;
-          cell.appendChild(dayLabel);
-
-          if(adminState.today === dStr) cell.classList.add('cal-cell-today');
-          if(adminState.selectedDate === dStr) cell.classList.add('cal-cell-selected');
-
-          var lessons = lessonMap[dStr] || [];
-          if(lessons.length > 0){
-            cell.classList.add('cal-cell-has-lesson');
-            var tagsWrap = document.createElement('div');
-            tagsWrap.className = 'cal-tags';
-            lessons.sort(function(a, b){
-              var at = (a.startTime || '');
-              var bt = (b.startTime || '');
-              if(at < bt) return -1;
-              if(at > bt) return 1;
-              return 0;
-            });
-            lessons.forEach(function(ls){
-              var tag = document.createElement('div');
-              tag.className = 'cal-tag';
-              
-              var prefix = '';
-              if(ls.hasNewCustomer){
-                tag.classList.add('new-customer'); 
-                prefix = '🔰 '; 
-              }
-
-              if(ls.color) {
-                tag.style.backgroundColor = ls.color;
-                if(isLightColor(ls.color)){
-                  tag.style.color = '#333333';
-                  tag.style.border = '1px solid #cccccc';
-                } else {
-                  tag.style.color = '#ffffff';
-                }
-              }
-              
-              var teacher = (ls.teacherName || '');
-              var lessonShort = String(ls.lessonName || '');
-
-              var capNum = parseInt(ls.capacity, 10);
-              var capLabel = '';
-              if(!isNaN(capNum) && capNum > 0){
-                var reserved = (typeof ls.reservedCount === 'number') ? ls.reservedCount : 0;
-                capLabel = reserved + '/' + capNum;
-              }
-
-              var parts = [];
-              if(lessonShort) parts.push(lessonShort);
-              if(teacher) parts.push(teacher);
-              if(capLabel) parts.push(capLabel);
-              
-              tag.textContent = prefix + parts.join(' / ');
-              tagsWrap.appendChild(tag);
-            });
-            cell.appendChild(tagsWrap);
-          }
-
-          (function(dateStrFixed){
-            cell.addEventListener('click', function(){
-              var prevSelected = adminState.selectedDate;
-              adminState.selectedDate = dateStrFixed;
-              updateSelectedDateLabel();
-              renderMonth();
-              renderSlotListForSelectedDate();
-
-              if(prevSelected === dateStrFixed && 
-                typeof adminOpenPackageSelect === 'function'){
-                adminOpenPackageSelect(dateStrFixed);
-              }
-            });
-          })(dStr);
-          dayNum++;
-        }else{
-          cell.classList.add('cal-cell-empty');
-        }
-        rowEl.appendChild(cell);
-      }
-      if(rowHasDate) grid.appendChild(rowEl);
-    }
-  }
-
-  function updateSelectedDateLabel(){
-    var el = adminState.dom.selectedDateLabel;
-    if(!el) return;
-    if(!adminState.selectedDate){ el.textContent = '-'; return; }
-    el.textContent = formatDateLabel(adminState.selectedDate);
-  }
-
-  function formatDateLabel(dateStr){
-    if(!dateStr) return '';
-    var parts = dateStr.split('-');
-    if(parts.length < 3) return dateStr;
-    var y = parseInt(parts[0], 10);
-    var m = parseInt(parts[1], 10);
-    var d = parseInt(parts[2], 10);
-    if(isNaN(y) || isNaN(m) || isNaN(d)) return dateStr;
-    var dt = new Date(y, m - 1, d);
-    var wd = ['日','月','火','水','木','金','土'][dt.getDay()] || '';
-    return y + '年' + m + '月' + d + '日(' + wd + ')';
-  }
-
-  function renderSlotListForSelectedDate(){
-    var listEl = adminState.dom.slotList;
-    if(!listEl) return;
-    listEl.innerHTML = '';
-    var dateStr = adminState.selectedDate;
-    if(!dateStr){
-      var p = document.createElement('p');
-      p.className = 'empty-text';
-      p.textContent = '日付を選択してください。';
-      listEl.appendChild(p);
-      return;
-    }
-
-    var lessons = adminState.lessons.filter(function(ls){
-      return ls.date === dateStr && ls.status !== '削除';
-    });
-    if(lessons.length === 0){
-      var p2 = document.createElement('p');
-      p2.className = 'empty-text';
-      p2.textContent = 'この日のレッスンはまだ登録されていません。';
-      listEl.appendChild(p2);
-      return;
-    }
-
-    lessons.sort(function(a, b){
-      var at = (a.startTime || '');
-      var bt = (b.startTime || '');
-      if(at < bt) return -1;
-      if(at > bt) return 1;
-      return 0;
-    });
-    lessons.forEach(function(ls){
-      var card = document.createElement('div');
-      card.className = 'slot-card';
-
-      var header = document.createElement('div');
-      header.className = 'slot-card-hd';
-      var title = document.createElement('div');
-      title.className = 'slot-card-title';
-      var tName = (ls.teacherName || '');
-      var lName = (ls.lessonName || 'レッスン');
-      
-      var capNum = parseInt(ls.capacity, 10);
-      var capLabel = '';
-      if(!isNaN(capNum) && capNum > 0){
-        var reserved = (typeof ls.reservedCount === 'number') ? ls.reservedCount : 0;
-        capLabel = ' (' + reserved + '/' + capNum + ')';
-      }
-
-      var prefix = '';
-      if(ls.hasNewCustomer){
-        prefix = '🔰 ';
-      }
-
-      if(tName) title.textContent = prefix + tName + ' ／ ' + lName + capLabel;
-      else title.textContent = prefix + lName + capLabel;
-      
-      header.appendChild(title);
-
-      var time = document.createElement('div');
-      time.className = 'slot-card-time';
-      var label = (ls.startTime || '') + (ls.endTime ? '〜' + ls.endTime : '');
-      time.textContent = label;
-      header.appendChild(time);
-      card.appendChild(header);
-
-      var body = document.createElement('div');
-      body.className = 'slot-card-bd';
-      if(ls.description){
-        var desc = document.createElement('p');
-        desc.className = 'slot-card-desc';
-        desc.textContent = String(ls.description).slice(0, 60);
-        body.appendChild(desc);
-      }
-      if(ls.price != null && ls.price !== ''){
-        var price = document.createElement('p');
-        price.className = 'slot-card-price';
-        var num = Number(ls.price);
-        if(!isNaN(num)) price.textContent = '料金：¥' + num.toLocaleString() + '（税込）';
-        else price.textContent = '料金：' + ls.price;
-        body.appendChild(price);
-      }
-      card.appendChild(body);
-
-      if(ls.color) card.style.borderLeft = '4px solid ' + ls.color;
-      if(ls.hasNewCustomer){
-        card.style.backgroundColor = '#fffbf0';
-      }
-
-      card.addEventListener('click', function(){
-        if(typeof adminOpenSlotModalEdit === 'function') adminOpenSlotModalEdit(ls);
-      });
-      listEl.appendChild(card);
-    });
-  }
-
-  function renderPackageList(){
-    var listEl = adminState.dom.packageList;
-    if(!listEl) return;
-    listEl.innerHTML = '';
-    var pkgs = adminState.packages.slice();
-    if(pkgs.length === 0){
-      var p = document.createElement('p');
-      p.className = 'empty-text';
-      p.textContent = 'レッスンパッケージがまだ登録されていません。';
-      listEl.appendChild(p);
-      return;
-    }
-    pkgs.sort(function(a, b){
-      var an = (a.lessonName || '');
-      var bn = (b.lessonName || '');
-      if(an < bn) return -1;
-      if(an > bn) return 1;
-      return 0;
-    });
-    pkgs.forEach(function(pkg){
-      var card = document.createElement('div');
-      card.className = 'package-card';
-      var header = document.createElement('div');
-      header.className = 'package-card-hd';
-      var title = document.createElement('div');
-      title.className = 'package-card-title';
-      title.textContent = (pkg.lessonName || 'レッスン') + (pkg.teacherName ? ' ／ ' + pkg.teacherName : '');
-      header.appendChild(title);
-      if(pkg.price != null && pkg.price !== ''){
-        var price = document.createElement('div');
-        price.className = 'package-card-price';
-        var num = Number(pkg.price);
-        if(!isNaN(num)) price.textContent = '¥' + num.toLocaleString() + '（税込）';
-        else price.textContent = '¥' + pkg.price;
-        header.appendChild(price);
-      }
-      card.appendChild(header);
-      var body = document.createElement('div');
-      body.className = 'package-card-bd';
-      if(pkg.description){
-        var desc = document.createElement('p');
-        desc.className = 'package-card-desc';
-        desc.textContent = String(pkg.description).slice(0, 80);
-        body.appendChild(desc);
-      }
-      card.appendChild(body);
-      if(pkg.color) card.style.borderLeft = '4px solid ' + pkg.color;
-      card.addEventListener('click', function(){ adminOpenPackageModalEdit(pkg); });
-      listEl.appendChild(card);
-    });
-  }
-
-  function renderCustomerList(){
-    var ul = document.getElementById('customerListUL');
-    var msg = document.getElementById('customerListMsg');
-    if(!ul) return;
-    
-    ul.innerHTML = '<li class="loading-text">読み込み中...</li>';
-    if(msg) msg.style.display = 'none';
-    gas('apiGetCustomerList')
-      .then(function(list){
-        adminState.customerList = Array.isArray(list) ? list : [];
-        filterCustomerList(''); 
-      })
-      .catch(function(err){
-        console.error(err);
-        ul.innerHTML = '<li class="error-text">読み込みエラー</li>';
-      });
-  }
-
-  function filterCustomerList(keyword){
-    var ul = document.getElementById('customerListUL');
-    var msg = document.getElementById('customerListMsg');
-    if(!ul) return;
-    
-    ul.innerHTML = '';
-    var list = adminState.customerList || [];
-    var filtered = list;
-    if(keyword){
-      var kw = keyword.toLowerCase();
-      filtered = list.filter(function(c){
-        var txt = (c.name + ' ' + c.phone + ' ' + c.email).toLowerCase();
-        return txt.indexOf(kw) > -1;
-      });
-    }
-
-    if(filtered.length === 0){
-      if(msg) {
-        msg.textContent = keyword ? '該当する顧客がいません' : '顧客データがありません';
-        msg.style.display = 'block';
-      }
-    } else {
-      if(msg) msg.style.display = 'none';
-      filtered.forEach(function(c){
-        var li = document.createElement('li');
-        li.className = 'guest-item';
-        li.style.cursor = 'pointer';
-        li.innerHTML = '<strong>' + (c.name || '（名称未設定）') + '</strong> 様 <br>' +
-                       '<span style="font-size:0.85em;color:#666;">来店:' + (c.visitCount||0) + '回 / Tel:' + (c.phone||'-') + '</span>';
-        li.onclick = function(){
-          openCustomerHistory(c);
-        };
-        ul.appendChild(li);
-      });
-    }
-  }
-
-  function openCustomerHistory(customer){
-    var modal = document.getElementById('customerHistoryModal');
-    var ul = document.getElementById('customerHistoryUL');
-    var title = document.getElementById('historyCustomerName');
-    if(title) title.textContent = (customer.name || 'お客様') + ' 様 の履歴';
-    if(ul) ul.innerHTML = '<li class="loading-text">履歴を読み込み中...</li>';
-    if(modal) modal.style.display = 'flex';
-    gas('apiGetCustomerHistory', { email: customer.email })
-      .then(function(history){
-        if(!ul) return;
-        ul.innerHTML = '';
-        if(!history || history.length === 0){
-          ul.innerHTML = '<li class="empty-text">履歴なし</li>';
-        } else {
-          history.forEach(function(h){
-            var li = document.createElement('li');
-            li.className = 'guest-item';
-            li.style.cursor = 'default';
-            li.innerHTML = '<strong>' + h.date + ' ' + h.time + '</strong><br>' +
-                           h.lessonName + ' <span style="font-size:0.8em;color:#888;">(' + h.status + ')</span>';
-            ul.appendChild(li);
-          });
-        }
-      })
-      .catch(function(err){
-        if(ul) ul.innerHTML = '<li class="error-text">読み込みエラー</li>';
-      });
-  }
-  </script>
-
-  <script>
-  // ★追加：設定ボタン用関数
-  function adminOpenSettings(){
-    var s = adminState.settings || {};
-    (document.getElementById('setStudioName')||{}).value = s.studioName || '';
-    (document.getElementById('setConcept')||{}).value = s.concept || '';
-    (document.getElementById('setAddress')||{}).value = s.address || '';
-    (document.getElementById('setContactEmail')||{}).value = s.contactEmail || '';
-    (document.getElementById('setFacilities')||{}).value = s.facilities || '';
-    
-    document.getElementById('settingsModal').style.display = 'flex';
-  }
-
-  function adminCloseSettings(){
-    document.getElementById('settingsModal').style.display = 'none';
-  }
-
-  function adminSaveSettings(){
-    var payload = {
-      studioName: document.getElementById('setStudioName').value,
-      concept: document.getElementById('setConcept').value,
-      address: document.getElementById('setAddress').value,
-      contactEmail: document.getElementById('setContactEmail').value,
-      facilities: document.getElementById('setFacilities').value
-    };
-
-    var btn = document.getElementById('btnSaveSettings');
-    var originalText = btn.textContent;
-    btn.textContent = '保存中...';
-    btn.disabled = true;
-
-    gas('apiSaveSettings', payload).then(function(){
-      showToast('スタジオ情報を更新しました');
-      adminState.settings = payload; // ローカル更新
-      btn.textContent = originalText;
-      btn.disabled = false;
-      adminCloseSettings();
-    }).catch(function(err){
-      alert('保存に失敗しました');
-      btn.textContent = originalText;
-      btn.disabled = false;
-    });
-  }
-
-  function adminOpenHelp(){
-    var modal = document.getElementById('helpModal');
-    if(modal) modal.style.display = 'flex';
-  }
-  function adminCloseHelp(){
-    var modal = document.getElementById('helpModal');
-    if(modal) modal.style.display = 'none';
-  }
-
-  var adminPackageState = {
-    editingId: null
-  };
-
-  var ADMIN_PACKAGE_COLOR_PRESETS = [
-    '#000000', '#FFFFFF', '#9E9E9E', '#FFD700', '#67C5B5', '#F48FB1', '#FFCC80', '#90CAF9', '#CE93D8', '#A5D6A7'
-  ];
-
-  function adminOpenPackageModalNew(){
-    adminPackageState.editingId = null;
-    var titleEl = document.getElementById('packageModalTitle');
-    if(titleEl) titleEl.textContent = 'レッスンパッケージの登録';
-    setPackageModalFields({
-      id: '',
-      lessonName: '',
-      teacherName: '',
-      description: '',
-      price: '',
-      capacity: '',
-      color: '#67C5B5'
-    });
-    var delBtn = document.getElementById('packageDeleteBtn');
-    if(delBtn) delBtn.style.display = 'none';
-
-    renderPackageColorPalette('#67C5B5');
-    var modal = document.getElementById('packageModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminOpenPackageModalEdit(pkg){
-    if(!pkg) return;
-    adminPackageState.editingId = pkg.id || null;
-    var titleEl = document.getElementById('packageModalTitle');
-    if(titleEl) titleEl.textContent = 'レッスンパッケージの編集';
-    
-    setPackageModalFields(pkg);
-    var delBtn = document.getElementById('packageDeleteBtn');
-    if(delBtn) delBtn.style.display = '';
-
-    var baseColor = pkg.color || '#67C5B5';
-    renderPackageColorPalette(baseColor);
-    var modal = document.getElementById('packageModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function setPackageModalFields(pkg){
-    (document.getElementById('packageId') || {}).value = pkg.id || '';
-    (document.getElementById('packageLessonName') || {}).value = pkg.lessonName || '';
-    (document.getElementById('packageTeacherName') || {}).value = pkg.teacherName || '';
-    (document.getElementById('packageDescription') || {}).value = pkg.description || '';
-    (document.getElementById('packagePrice') || {}).value = (pkg.price != null && pkg.price !== '') ? pkg.price : '';
-    (document.getElementById('packageCapacity') || {}).value = (pkg.capacity != null && pkg.capacity !== '') ? pkg.capacity : '';
-    (document.getElementById('packageColor') || {}).value = pkg.color || '#67C5B5';
-  }
-
-  function adminClosePackageModal(){
-    var modal = document.getElementById('packageModal');
-    if(modal) modal.style.display = 'none';
-    adminPackageState.editingId = null;
-  }
-
-  function adminHandlePackageSave(){
-    var idEl        = document.getElementById('packageId');
-    var nameEl      = document.getElementById('packageLessonName');
-    var teacherEl   = document.getElementById('packageTeacherName');
-    var descEl      = document.getElementById('packageDescription');
-    var priceEl     = document.getElementById('packagePrice');
-    var capacityEl  = document.getElementById('packageCapacity');
-    var colorEl     = document.getElementById('packageColor');
-
-    var nameVal = nameEl ? (nameEl.value || '').trim() : '';
-    if(!nameVal){
-      alert('レッスン名を入力してください。');
-      return;
-    }
-
-    var priceVal = priceEl ? (priceEl.value || '').trim() : '';
-    var rawCap = capacityEl ? (capacityEl.value || '').trim() : '';
-    var capacityVal = '';
-    if(rawCap !== ''){
-      var n = parseInt(rawCap, 10);
-      if(isNaN(n) || n < 0) n = 0;
-      capacityVal = String(n);
-    }
-
-    var colorVal = colorEl ? (colorEl.value || '').trim() : '';
-    if(!colorVal) colorVal = '#67C5B5';
-    var payload = {
-      id:           idEl ? (idEl.value || '') : '',
-      lessonName:   nameVal,
-      teacherName:  teacherEl ? (teacherEl.value || '') : '',
-      description:  descEl ? (descEl.value || '') : '',
-      price:        priceVal,
-      capacity:     capacityVal,
-      color:        colorVal
-    };
-    gas('apiSavePackage', payload)
-      .then(function(res){
-        showToast('レッスンパッケージを保存しました。');
-        adminClosePackageModal();
-        return gas('apiGetPackageList');
-      })
-      .then(function(pkgs){
-        adminState.packages = Array.isArray(pkgs) ? pkgs : [];
-        renderPackageList();
-      })
-      .catch(function(err){
-        console.error(err);
-      });
-  }
-
-  function adminHandlePackageDeleteClick(){
-    var idEl = document.getElementById('packageId');
-    var id = idEl ? (idEl.value || '') : '';
-    if(!id){
-      alert('削除対象のパッケージが見つかりません。');
-      return;
-    }
-    var modal = document.getElementById('packageDeleteModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminClosePackageDeleteModal(){
-    var modal = document.getElementById('packageDeleteModal');
-    if(modal) modal.style.display = 'none';
-  }
-
-  function adminHandlePackageDeleteConfirm(){
-    var idEl = document.getElementById('packageId');
-    var id = idEl ? (idEl.value || '') : '';
-    if(!id){
-      alert('削除対象のパッケージが見つかりません。');
-      return;
-    }
-
-    gas('apiDeletePackage', { id: id })
-      .then(function(res){
-        showToast('レッスンパッケージを削除しました。');
-        adminClosePackageDeleteModal();
-        adminClosePackageModal();
-        return gas('apiGetPackageList');
-      })
-      .then(function(pkgs){
-        adminState.packages = Array.isArray(pkgs) ? pkgs : [];
-        renderPackageList();
-      })
-      .catch(function(err){
-        console.error(err);
-      });
-  }
-
-  function adminOpenPackageSelect(dateStr){
-    if(!dateStr) return;
-    adminState.selectedDate = dateStr;
-    updateSelectedDateLabel();
-    
-    var dateLabel = document.getElementById('packageSelectDateLabel');
-    if(dateLabel) dateLabel.textContent = formatDateLabel(dateStr) + ' のレッスンを登録します。';
-    var listEl = document.getElementById('packageSelectList');
-    if(listEl){
-      listEl.innerHTML = '';
-      var pkgs = adminState.packages.slice();
-      if(pkgs.length === 0){
-        var p = document.createElement('p');
-        p.className = 'empty-text';
-        p.textContent = '登録できるレッスンパッケージがありません。下の「レッスンパッケージ」から作成してください。';
-        listEl.appendChild(p);
-      }else{
-        pkgs.sort(function(a, b){
-          var an = (a.lessonName || '');
-          var bn = (b.lessonName || '');
-          if(an < bn) return -1;
-          if(an > bn) return 1;
-          return 0;
-        });
-        pkgs.forEach(function(pkg){
-          var card = document.createElement('div');
-          card.className = 'package-card package-card--select';
-
-          var header = document.createElement('div');
-          header.className = 'package-card-hd';
-          var title = document.createElement('div');
-          title.className = 'package-card-title';
-          title.textContent = (pkg.lessonName || 'レッスン') + (pkg.teacherName ? ' ／ ' + pkg.teacherName : '');
-          header.appendChild(title);
-
-          if(pkg.price != null && pkg.price !== ''){
-            var price = document.createElement('div');
-            price.className = 'package-card-price';
-            var num = Number(pkg.price);
-            if(!isNaN(num)){
-              price.textContent = '¥' + num.toLocaleString() + '（税込）';
-            }else{
-              price.textContent = '¥' + pkg.price;
-            }
-            header.appendChild(price);
-          }
-
-          card.appendChild(header);
-
-          var body = document.createElement('div');
-          body.className = 'package-card-bd';
-          if(pkg.description){
-            var desc = document.createElement('p');
-            desc.className = 'package-card-desc';
-            desc.textContent = String(pkg.description).slice(0, 80);
-            body.appendChild(desc);
-          }
-          card.appendChild(body);
-          if(pkg.color){
-            card.style.borderLeft = '4px solid ' + pkg.color;
-          }
-
-          card.addEventListener('click', function(){
-            adminHandlePackageChosen(pkg);
-          });
-          listEl.appendChild(card);
-        });
-      }
-    }
-
-    var modal = document.getElementById('packageSelectModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminClosePackageSelectModal(){
-    var modal = document.getElementById('packageSelectModal');
-    if(modal) modal.style.display = 'none';
-  }
-
-  function adminHandlePackageChosen(pkg){
-    if(!pkg) return;
-    adminClosePackageSelectModal();
-    if(typeof adminOpenSlotModalNewWithPackage === 'function'){
-      adminOpenSlotModalNewWithPackage(adminState.selectedDate, pkg);
-    }
-  }
-
-  function renderPackageColorPalette(selectedColor){
-    var hiddenInput = document.getElementById('packageColor');
-    var palette = document.getElementById('packageColorPalette');
-    if(!hiddenInput || !palette) return;
-
-    var current = selectedColor || hiddenInput.value || '#67C5B5';
-    palette.innerHTML = '';
-    palette.style.display = 'flex';
-    palette.style.flexWrap = 'wrap';
-    palette.style.gap = '6px';
-    palette.style.marginTop = '4px';
-    
-    ADMIN_PACKAGE_COLOR_PRESETS.forEach(function(col){
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.style.width = '44px'; /* ★修正: 66px -> 44px */
-      btn.style.height = '44px';
-      btn.style.borderRadius = '999px';
-      btn.style.border = '1px solid rgba(0,0,0,0.25)';
-      btn.style.padding = '0';
-      btn.style.background = col;
-      btn.style.cursor = 'pointer';
-      btn.style.outline = 'none';
-      btn.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease';
-
-      if(col === current){
-        btn.style.border = '2px solid #000000';
-        btn.style.boxShadow = '0 0 0 2px rgba(0,0,0,0.25)';
-        btn.style.transform = 'scale(1.1)';
-
-        var mark = document.createElement('span');
-        mark.className = 'color-check';
-        mark.textContent = '✓';
-        mark.style.display = 'inline-block';
-        mark.style.color = '#ffffff';
-        mark.style.fontSize = '24px'; /* ★修正: 42px -> 24px */
-        mark.style.fontWeight = '700';
-        mark.style.lineHeight = '44px';
-        mark.style.textAlign = 'center';
-        mark.style.width = '100%';
-        mark.style.height = '100%';
-        btn.appendChild(mark);
-      }
-
-      btn.addEventListener('click', function(){
-        hiddenInput.value = col;
-
-        var buttons = palette.querySelectorAll('button');
-        buttons.forEach(function(b){
-          b.style.border = '1px solid rgba(0,0,0,0.25)';
-          b.style.boxShadow = 'none';
-          b.style.transform = 'scale(1)';
-          var m = b.querySelector('.color-check');
-          if(m) b.removeChild(m);
-        });
-
-        btn.style.border = '2px solid #000000';
-        btn.style.boxShadow = '0 0 0 2px rgba(0,0,0,0.25)';
-        btn.style.transform = 'scale(1.1)';
-
-        var mark = document.createElement('span');
-        mark.className = 'color-check';
-        mark.textContent = '✓';
-        mark.style.display = 'inline-block';
-        mark.style.color = '#ffffff';
-        mark.style.fontSize = '24px';
-        mark.style.fontWeight = '700';
-        mark.style.lineHeight = '44px';
-        mark.style.textAlign = 'center';
-        mark.style.width = '100%';
-        mark.style.height = '100%';
-        btn.appendChild(mark);
-      });
-      palette.appendChild(btn);
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    var pkgSaveBtn = document.getElementById('packageSaveBtn');
-    if(pkgSaveBtn) pkgSaveBtn.addEventListener('click', adminHandlePackageSave);
-    var pkgDeleteBtn = document.getElementById('packageDeleteBtn');
-    if(pkgDeleteBtn) pkgDeleteBtn.addEventListener('click', adminHandlePackageDeleteClick);
-    var pkgDeleteConfirmBtn = document.getElementById('packageDeleteConfirmBtn');
-    if(pkgDeleteConfirmBtn) pkgDeleteConfirmBtn.addEventListener('click', adminHandlePackageDeleteConfirm);
-  });
-  </script>
-
-  <script>
-  var adminSlotState = {
-    editingId: null,
-    date: null,
-    packageId: null,
-    packageSummary: '',
-    currentReservedCount: 0 
-  };
-  var ADMIN_COLOR_PRESETS = [
-    '#000000', '#FFFFFF', '#9E9E9E', '#FFD700', '#67C5B5', '#F48FB1', '#FFCC80', '#90CAF9', '#CE93D8', '#A5D6A7'
-  ];
-  function adminOpenSlotModalNewWithPackage(dateStr, pkg){
-    if(!dateStr || !pkg) return;
-
-    adminSlotState.editingId = null;
-    adminSlotState.date = dateStr;
-    adminSlotState.packageId = pkg.id || '';
-    adminSlotState.packageSummary = buildPackageSummary(pkg);
-    adminSlotState.currentReservedCount = 0;
-
-    (document.getElementById('slotId')||{}).value = '';
-    (document.getElementById('slotDateLabel')||{}).textContent = formatDateLabel(dateStr);
-    (document.getElementById('slotPackageSummary')||{}).textContent = adminSlotState.packageSummary;
-    (document.getElementById('slotStartTime')||{}).value = '';
-    (document.getElementById('slotEndTime')||{}).value = '';
-    (document.getElementById('slotPrice')||{}).value = (pkg.price != null && pkg.price !== '') ? pkg.price : '';
-    (document.getElementById('slotCapacity')||{}).value = (pkg.capacity != null && pkg.capacity !== '') ? pkg.capacity : '';
-    (document.getElementById('slotColor')||{}).value = pkg.color || '#67C5B5';
-    var delBtn = document.getElementById('slotDeleteBtn');
-    if(delBtn) delBtn.style.display = 'none';
-
-    var priceEl = document.getElementById('slotPrice');
-    if(priceEl) {
-      priceEl.disabled = false;
-      priceEl.style.backgroundColor = '';
-    }
-    document.getElementById('priceLockMsg').style.display = 'none';
-    document.getElementById('slotGuestSection').style.display = 'none';
-    document.getElementById('slotGuestList').innerHTML = '';
-
-    var titleEl = document.getElementById('slotModalTitle');
-    if(titleEl) titleEl.textContent = 'レッスン枠の登録';
-
-    renderSlotColorPalette();
-    var modal = document.getElementById('slotModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminOpenSlotModalEdit(lesson){
-    if(!lesson) return;
-    adminSlotState.editingId = lesson.id || null;
-    adminSlotState.date = lesson.date || null;
-    adminSlotState.packageId = lesson.packageId || '';
-    adminSlotState.packageSummary = buildLessonSummary(lesson);
-    adminSlotState.currentReservedCount = lesson.reservedCount || 0;
-
-    (document.getElementById('slotId')||{}).value = lesson.id || '';
-    (document.getElementById('slotDateLabel')||{}).textContent = formatDateLabel(lesson.date);
-    (document.getElementById('slotPackageSummary')||{}).textContent = adminSlotState.packageSummary;
-    (document.getElementById('slotStartTime')||{}).value = lesson.startTime || '';
-    (document.getElementById('slotEndTime')||{}).value = lesson.endTime || '';
-    (document.getElementById('slotPrice')||{}).value = (lesson.price != null && lesson.price !== '') ? lesson.price : '';
-    (document.getElementById('slotCapacity')||{}).value = (lesson.capacity != null && lesson.capacity !== '') ? lesson.capacity : '';
-    (document.getElementById('slotColor')||{}).value = lesson.color || '#67C5B5';
-    var delBtn = document.getElementById('slotDeleteBtn');
-    if(delBtn) {
-      if(adminSlotState.currentReservedCount > 0) {
-        delBtn.style.display = 'none';
-      } else {
-        delBtn.style.display = ''; 
-      }
-    }
-
-    var titleEl = document.getElementById('slotModalTitle');
-    if(titleEl) titleEl.textContent = 'レッスン枠の編集';
-
-    renderSlotColorPalette();
-
-    var priceEl = document.getElementById('slotPrice');
-    var lockMsg = document.getElementById('priceLockMsg');
-    if(priceEl && lockMsg){
-      if(adminSlotState.currentReservedCount > 0){
-        priceEl.disabled = true;
-        priceEl.style.backgroundColor = '#f0f0f0';
-        lockMsg.style.display = 'inline';
-      } else {
-        priceEl.disabled = false;
-        priceEl.style.backgroundColor = '';
-        lockMsg.style.display = 'none';
-      }
-    }
-
-    var guestSec = document.getElementById('slotGuestSection');
-    var guestList = document.getElementById('slotGuestList');
-    guestSec.style.display = 'block';
-    guestList.innerHTML = '<li class="loading-text">読み込み中...</li>';
-    gas('apiGetSlotGuests', lesson.id)
-      .then(function(guests){
-        guestList.innerHTML = '';
-        if(!guests || guests.length === 0){
-          guestList.innerHTML = '<li class="empty-text">予約なし</li>';
-        } else {
-          guests.forEach(function(g){
-            var li = document.createElement('li');
-            li.className = 'guest-item';
-            li.style.cursor = 'pointer';
-            li.onclick = function() { adminOpenGuestDetailModal(g); };
-            
-            var mark = '';
-            var vc = Number(g.visitCount || 0);
-            if(vc <= 1) {
-              mark = ' <span style="font-size:1.0em;">🔰</span>';
-            }
-
-            li.innerHTML = '<strong>' + g.name + '</strong>' + mark + ' 様 <br><span style="font-size:0.85em;color:#666;">' + (g.phone || '電話なし') + '</span>';
-            guestList.appendChild(li);
-          });
-        }
-      })
-      .catch(function(e){
-        guestList.innerHTML = '<li class="error-text">読み込みエラー</li>';
-      });
-    var modal = document.getElementById('slotModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminOpenGuestDetailModal(guest){
-    (document.getElementById('guestName')||{}).value = guest.name || '';
-    (document.getElementById('guestPhone')||{}).value = guest.phone || '';
-    (document.getElementById('guestEmail')||{}).value = guest.email || '';
-    
-    (document.getElementById('guestVisitCount')||{}).value = (guest.visitCount != null) ? guest.visitCount + ' 回' : '0 回';
-    (document.getElementById('guestCustomerId')||{}).value = guest.customerId || '-';
-    (document.getElementById('guestMemo')||{}).value = guest.memo || '';
-    var btnHistory = document.getElementById('btnGuestHistoryFromDetail');
-    if(btnHistory){
-      btnHistory.onclick = function(){
-        adminCloseGuestDetailModal();
-        if(typeof openCustomerHistory === 'function'){
-          openCustomerHistory(guest);
-        } else {
-          alert('履歴機能の読み込みに失敗しました');
-        }
-      };
-    }
-    
-    var modal = document.getElementById('guestDetailModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function adminCloseGuestDetailModal(){
-    var modal = document.getElementById('guestDetailModal');
-    if(modal) modal.style.display = 'none';
-  }
-
-  function buildPackageSummary(pkg){
-    var parts = [];
-    var title = (pkg.lessonName || 'レッスン');
-    if(pkg.teacherName) title += ' ／ ' + pkg.teacherName;
-    parts.push(title);
-    if(pkg.price != null && pkg.price !== ''){
-      var num = Number(pkg.price);
-      if(!isNaN(num)){
-        parts.push('料金：¥' + num.toLocaleString() + '（税込）');
-      }else{
-        parts.push('料金：' + pkg.price);
-      }
-    }
-    return parts.join('　');
-  }
-
-  function buildLessonSummary(ls){
-    var parts = [];
-    var title = (ls.lessonName || 'レッスン');
-    if(ls.teacherName) title += ' ／ ' + ls.teacherName;
-    parts.push(title);
-    if(ls.price != null && ls.price !== ''){
-      var num = Number(ls.price);
-      if(!isNaN(num)){
-        parts.push('料金：¥' + num.toLocaleString() + '（税込）');
-      }else{
-        parts.push('料金：' + ls.price);
-      }
-    }
-    return parts.join('　');
-  }
-
-  function adminCloseSlotModal(){
-    var modal = document.getElementById('slotModal');
-    if(modal) modal.style.display = 'none';
-    adminSlotState.editingId = null;
-    adminSlotState.date = null;
-    adminSlotState.packageId = null;
-    adminSlotState.packageSummary = '';
-  }
-
-  function adminOpenSlotDeleteModal(){
-    var modal = document.getElementById('slotDeleteModal');
-    if(modal) modal.style.display = 'flex';
-  }
-  function adminCloseSlotDeleteModal(){
-    var modal = document.getElementById('slotDeleteModal');
-    if(modal) modal.style.display = 'none';
-  }
-
-  function adminHandleSlotSave(){
-    var dateStr = adminSlotState.date || adminState.selectedDate;
-    if(!dateStr){ alert('日付が不明です。'); return; }
-    if(!adminSlotState.packageId){ alert('レッスンパッケージが選択されていません。'); return; }
-
-    var startEl = document.getElementById('slotStartTime');
-    var endEl   = document.getElementById('slotEndTime');
-    var colorEl = document.getElementById('slotColor');
-    var priceEl = document.getElementById('slotPrice');
-    var capEl   = document.getElementById('slotCapacity');
-    var idEl    = document.getElementById('slotId');
-
-    var startVal    = startEl ? (startEl.value || '').trim() : '';
-    var endVal      = endEl   ? (endEl.value   || '').trim() : '';
-    var colorVal    = colorEl ? (colorEl.value || '').trim() : '';
-    var priceVal    = priceEl ? (priceEl.value || '').trim() : '';
-    var capacityVal = capEl   ? (capEl.value   || '').trim() : '';
-
-    if(!startVal){ alert('開始時刻を入力してください。'); return; }
-    if(!endVal){ alert('終了時刻を入力してください。'); return; }
-
-    if(capacityVal !== ''){
-      var newCap = parseInt(capacityVal, 10);
-      if(adminSlotState.currentReservedCount > 0 && newCap < adminSlotState.currentReservedCount){
-        alert('エラー：現在の予約数(' + adminSlotState.currentReservedCount + '名)より少ない定員には変更できません。');
-        return;
-      }
-    }
-
-    var payload = {
-      id:        idEl ? (idEl.value || '') : '',
-      date:      dateStr,
-      startTime: startVal,
-      endTime:   endVal,
-      packageId: adminSlotState.packageId,
-      color:     colorVal,
-      price:     priceVal,
-      capacity:  capacityVal
-    };
-    gas('apiAdminSaveSlot', payload)
-      .then(function(res){
-        showToast('レッスン枠を保存しました。');
-        adminCloseSlotModal();
-        return gas('apiGetAdminInit');
-      })
-      .then(function(data){
-        if(data){
-          adminState.today    = data.today || adminState.today;
-          adminState.lessons  = Array.isArray(data.lessons)  ? data.lessons  : [];
-          adminState.packages = Array.isArray(data.packages) ? data.packages : adminState.packages;
-        }
-        renderMonth();
-        updateSelectedDateLabel();
-        renderSlotListForSelectedDate();
-        renderPackageList();
-      })
-      .catch(function(err){
-        console.error(err);
-        alert(err.message); 
-      });
-  }
-
-  function adminHandleSlotDeleteClick(){
-    if(!adminSlotState.editingId){ alert('削除対象が見つかりません。'); return; }
-    adminOpenSlotDeleteModal();
-  }
-
-  function adminHandleSlotDeleteConfirm(){
-    if(!adminSlotState.editingId) return;
-    var id = adminSlotState.editingId;
-    gas('apiAdminDeleteSlot', { id: id })
-      .then(function(res){
-        showToast('レッスン枠を削除しました。');
-        adminCloseSlotDeleteModal();
-        adminCloseSlotModal();
-        return gas('apiGetAdminInit');
-      })
-      .then(function(data){
-        if(data){
-          adminState.today    = data.today || adminState.today;
-          adminState.lessons  = Array.isArray(data.lessons)  ? data.lessons  : [];
-          adminState.packages = Array.isArray(data.packages) ? data.packages : adminState.packages;
-        }
-        renderMonth();
-        updateSelectedDateLabel();
-        renderSlotListForSelectedDate();
-        renderPackageList();
-      })
-      .catch(function(err){
-        console.error(err);
-      });
-  }
-
-  function renderSlotColorPalette(){
-    var colorInput = document.getElementById('slotColor');
-    if(!colorInput) return;
-
-    var existing = document.getElementById('slotColorPalette');
-    if(existing && existing.parentNode) existing.parentNode.removeChild(existing);
-    var parent = colorInput.parentElement;
-    if(!parent) return;
-
-    var palette = document.createElement('div');
-    palette.id = 'slotColorPalette';
-    palette.style.display = 'flex';
-    palette.style.flexWrap = 'wrap';
-    palette.style.gap = '6px';
-    palette.style.marginTop = '4px';
-
-    var current = colorInput.value || '#67C5B5';
-    ADMIN_COLOR_PRESETS.forEach(function(col){
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.style.width = '44px'; /* ★修正: 66px -> 44px */
-      btn.style.height = '44px';
-      btn.style.borderRadius = '999px';
-      btn.style.border = '1px solid rgba(0,0,0,0.25)';
-      btn.style.padding = '0';
-      btn.style.background = col;
-      btn.style.cursor = 'pointer';
-      btn.style.outline = 'none';
-      btn.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease';
-
-      if(col === current){
-        btn.style.border = '2px solid #000000';
-        btn.style.boxShadow = '0 0 0 2px rgba(0,0,0,0.25)';
-        btn.style.transform = 'scale(1.1)';
-        var mark = document.createElement('span');
-        mark.className = 'color-check';
-        mark.textContent = '✓';
-        mark.style.display = 'inline-block';
-        if(col.toLowerCase() === '#ffffff' || col.toLowerCase() === '#fff'){
-          mark.style.color = '#000000';
-        } else {
-          mark.style.color = '#ffffff';
-        }
-        mark.style.fontSize = '24px'; /* ★修正: 42px -> 24px */
-        mark.style.fontWeight = '700';
-        mark.style.lineHeight = '44px';
-        mark.style.textAlign = 'center';
-        mark.style.width = '100%';
-        mark.style.height = '100%';
-        btn.appendChild(mark);
-      }
-
-      btn.addEventListener('click', function(){
-        colorInput.value = col;
-        var buttons = palette.querySelectorAll('button');
-        buttons.forEach(function(b){
-          b.style.border = '1px solid rgba(0,0,0,0.25)';
-          b.style.boxShadow = 'none';
-          b.style.transform = 'scale(1)';
-          var m = b.querySelector('.color-check');
-          if(m) b.removeChild(m);
-        });
-        btn.style.border = '2px solid #000000';
-        btn.style.boxShadow = '0 0 0 2px rgba(0,0,0,0.25)';
-        btn.style.transform = 'scale(1.1)';
-        var mark = document.createElement('span');
-        mark.className = 'color-check';
-        mark.textContent = '✓';
-        mark.style.display = 'inline-block';
+  <div id="helpModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--lg">
+      <div class="modal-hd">
+        <strong class="help-title">操作マニュアル</strong>
+        <button class="modal-close" type="button" onclick="document.getElementById('helpModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-bd help-content">
+        </div>
+      <div class="modal-ft">
+        <button class="btn" type="button" onclick="document.getElementById('helpModal').style.display='none'">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--lg">
+      <div class="modal-hd">
+        <strong>スタジオ情報の編集</strong>
+        <button class="modal-close" type="button" onclick="adminCloseSettings()">×</button>
+      </div>
+      <div class="modal-bd">
+        <p class="subtle-text" style="color:var(--ink-muted); margin-bottom:16px;">ユーザー画面の「About Studio」等に表示される内容です。</p>
+        <label class="field"><span>スタジオ名</span><input id="setStudioName" type="text" placeholder="Studio Torajiro"></label>
+        <label class="field"><span>Concept (紹介文)</span><textarea id="setConcept" rows="6" placeholder="スタジオの魅力やコンセプト..."></textarea></label>
+        <label class="field"><span>住所</span><input id="setAddress" type="text" placeholder="東京都..."></label>
+        <label class="field"><span>お問い合わせメール</span><input id="setContactEmail" type="email" placeholder="info@example.com"></label>
+        <label class="field"><span>設備・サービス</span><input id="setFacilities" type="text" placeholder="マット無料など"></label>
+      </div>
+      <div class="modal-ft">
+        <button id="btnSaveSettings" class="btn" type="button" onclick="adminSaveSettings()">保存して反映</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="customerListModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--lg">
+      <div class="modal-hd">
+        <strong>顧客台帳</strong>
+        <button class="modal-close" type="button" onclick="adminCloseCustomerList()">×</button>
+      </div>
+      <div class="modal-bd">
+        <div style="margin-bottom:24px;">
+          <input id="customerSearchInput" type="text" class="field" style="margin-bottom:0;" placeholder="名前や電話番号で検索...">
+        </div>
+        <p id="customerListMsg" class="empty-text" style="display:none;">データなし</p>
+        <ul id="customerListUL" class="guest-list"></ul>
+      </div>
+      <div class="modal-ft">
+        <button class="btn" type="button" onclick="adminCloseCustomerList()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="customerHistoryModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--lg">
+      <div class="modal-hd">
+        <strong>予約履歴</strong>
+        <button class="modal-close" type="button" onclick="adminCloseCustomerHistory()">×</button>
+      </div>
+      <div class="modal-bd">
+        <p id="historyCustomerName" style="border-bottom:1px dashed var(--line); padding-bottom:12px; margin-bottom:16px; font-size:24px; color:var(--ink);">- 様</p>
+        <ul id="customerHistoryUL" class="guest-list"></ul>
+      </div>
+      <div class="modal-ft">
+        <button class="btn" type="button" onclick="adminCloseCustomerHistory()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="packageModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-hd">
+        <strong id="packageModalTitle">パッケージ登録</strong>
+        <button class="modal-close" type="button" onclick="adminClosePackageModal()">×</button>
+      </div>
+      <div class="modal-bd">
+        <input type="hidden" id="packageId">
+        <label class="field"><span>レッスン名 (必須)</span><input id="packageLessonName" type="text"></label>
+        <label class="field"><span>先生名</span><input id="packageTeacherName" type="text"></label>
+        <label class="field"><span>レッスン内容</span><textarea id="packageDescription" rows="5"></textarea></label>
+        <div class="grid grid-2">
+          <label class="field"><span>料金 (円)</span><input id="packagePrice" type="number"></label>
+          <label class="field"><span>定員 (名)</span><input id="packageCapacity" type="number"></label>
+        </div>
+        <div class="field">
+          <label style="display:flex; align-items:center; cursor:pointer;">
+            <input id="packageIsPublic" type="checkbox" style="width:24px; height:24px; margin-right:12px;" checked>
+            <span style="font-weight:bold; font-size:16px;">ユーザー画面に「表示」する</span>
+          </label>
+        </div>
+        <label class="field">
+          <span>カラー (チェックマークで選択)</span>
+          <input id="packageColor" type="hidden">
+          <div id="packageColorPalette" class="color-palette"></div>
+        </label>
+      </div>
+      <div class="modal-ft" style="justify-content:space-between;">
+        <button id="packageDeleteBtn" class="btn-danger" type="button" style="display:none;">削除</button>
+        <div style="display:flex; gap:12px; margin-left:auto;">
+          <button class="btn-outline" type="button" onclick="adminClosePackageModal()">キャンセル</button>
+          <button id="packageSaveBtn" class="btn" type="button">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="packageDeleteModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--alert">
+      <div class="modal-hd"><strong>削除確認</strong></div>
+      <div class="modal-bd"><p style="font-size:24px;">このパッケージを削除しますか？<br>※作成済みの予約枠は消えません。</p></div>
+      <div class="modal-ft">
+        <button class="btn-outline" type="button" onclick="adminClosePackageDeleteModal()">キャンセル</button>
+        <button id="packageDeleteConfirmBtn" class="btn-danger" type="button">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="packageSelectModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--lg">
+      <div class="modal-hd">
+        <strong>パッケージを選択</strong>
+        <button class="modal-close" type="button" onclick="adminClosePackageSelectModal()">×</button>
+      </div>
+      <div class="modal-bd">
+        <p style="font-size:24px; color:var(--ink-muted); margin-bottom:16px;">追加するレッスンの雛形を選んでください</p>
+        <div id="packageSelectList" class="package-list"></div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn-outline" type="button" onclick="adminClosePackageSelectModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="slotModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-hd">
+        <strong id="slotModalTitle">レッスン枠編集</strong>
+        <button class="modal-close" type="button" onclick="adminCloseSlotModal()">×</button>
+      </div>
+      <div class="modal-bd">
+        <input type="hidden" id="slotId">
+        <div id="slotPackageArea" class="package-summary" style="display:none;"></div>
+        <label id="slotManualInputArea" class="field" style="display:none;">
+          <span>レッスン名</span>
+          <input id="slotManualName" type="text">
+        </label>
+        <label id="slotManualTeacherArea" class="field" style="display:none;">
+          <span>先生名</span>
+          <input id="slotManualTeacher" type="text">
+        </label>
+
+        <p id="slotDateLabel" style="font-size:28px; font-weight:bold; color:var(--accent-deep); margin-bottom:24px;"></p>
         
-        if(col.toLowerCase() === '#ffffff' || col.toLowerCase() === '#fff'){
-          mark.style.color = '#000000';
-        } else {
-          mark.style.color = '#ffffff';
-        }
+        <div class="grid grid-2">
+          <label class="field"><span>開始</span><input id="slotStartTime" type="time"></label>
+          <label class="field"><span>終了</span><input id="slotEndTime" type="time"></label>
+        </div>
         
-        mark.style.fontSize = '24px';
-        mark.style.fontWeight = '700';
-        mark.style.lineHeight = '44px';
-        mark.style.textAlign = 'center';
-        mark.style.width = '100%';
-        mark.style.height = '100%';
-        btn.appendChild(mark);
-      });
-      palette.appendChild(btn);
-    });
-    parent.appendChild(palette);
-  }
+        <div class="grid grid-2">
+          <label class="field">
+            <span>料金</span>
+            <input id="slotPrice" type="number">
+            <span id="priceLockMsg">※予約有のため変更不可</span>
+          </label>
+          <label class="field"><span>定員</span><input id="slotCapacity" type="number"></label>
+        </div>
 
-  document.addEventListener('DOMContentLoaded', function(){
-    var saveBtn = document.getElementById('slotSaveBtn');
-    if(saveBtn) saveBtn.addEventListener('click', adminHandleSlotSave);
-    var delBtn = document.getElementById('slotDeleteBtn');
-    if(delBtn) delBtn.addEventListener('click', adminHandleSlotDeleteClick);
-    var delConfirmBtn = document.getElementById('slotDeleteConfirmBtn');
-    if(delConfirmBtn) delConfirmBtn.addEventListener('click', adminHandleSlotDeleteConfirm);
+        <div class="field">
+          <label style="display:flex; align-items:center; cursor:pointer;">
+            <input id="slotIsPublic" type="checkbox" style="width:24px; height:24px; margin-right:12px;" checked>
+            <span style="font-weight:bold; font-size:16px;">ユーザー画面に「表示」する</span>
+          </label>
+        </div>
 
-    var guestModal = document.getElementById('guestDetailModal');
-    if(guestModal){
-      guestModal.addEventListener('click', function(e){
-        if(e.target === guestModal){
-          adminCloseGuestDetailModal();
-        }
-      });
-    }
-  });
-  </script>
+        <label class="field">
+          <span>カレンダー色</span>
+          <input id="slotColor" type="hidden">
+          <div id="slotColorPalette" class="color-palette"></div>
+        </label>
+
+        <div id="slotGuestSection">
+          <p style="font-size:24px; font-weight:bold; margin-bottom:12px;">予約済みのお客様</p>
+          <ul id="slotGuestList" class="guest-list">
+            </ul>
+        </div>
+      </div>
+
+      <div class="modal-ft" style="justify-content:space-between;">
+        <button id="slotDeleteBtn" class="btn-danger" type="button" style="display:none;">削除</button>
+        <div style="display:flex; gap:12px; margin-left:auto;">
+          <button class="btn-outline" type="button" onclick="adminCloseSlotModal()">キャンセル</button>
+          <button id="slotSaveBtn" class="btn" type="button">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="slotDeleteModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--alert">
+      <div class="modal-hd"><strong>削除確認</strong></div>
+      <div class="modal-bd"><p id="slotDeleteConfirmMessage" style="font-size:24px;">このレッスン枠を削除しますか？</p></div>
+      <div class="modal-ft">
+        <button class="btn-outline" type="button" onclick="adminCloseSlotDeleteModal()">キャンセル</button>
+        <button id="slotDeleteConfirmBtn" class="btn-danger" type="button">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="guestDetailModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-hd">
+        <strong>お客様詳細</strong>
+        <button class="modal-close" type="button" onclick="adminCloseGuestDetailModal()">×</button>
+      </div>
+      <div class="modal-bd">
+        <label class="field"><span>お名前</span><input id="guestName" type="text" readonly disabled></label>
+        <label class="field"><span>電話番号</span><input id="guestPhone" type="text" readonly disabled></label>
+        <label class="field"><span>Email (クリックで送信)</span><input id="guestEmail" type="text" readonly style="cursor:pointer; color:#0056b3; text-decoration:underline;"></label>
+        <div class="grid grid-2">
+           <label class="field"><span>来店回数</span><input id="guestVisitCount" type="text" readonly disabled></label>
+           <label class="field"><span>顧客ID</span><input id="guestCustomerId" type="text" readonly disabled></label>
+        </div>
+        <label class="field"><span>メモ</span><textarea id="guestMemo" rows="3" readonly disabled></textarea></label>
+        <div style="margin-top:24px; text-align:center;">
+           <button id="btnGuestHistoryFromDetail" class="btn-outline" type="button" style="width:100%;">過去の履歴を見る</button>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn" type="button" onclick="adminCloseGuestDetailModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="forceCancelModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-card modal-card--alert" style="border-top: 6px solid #ef5350;">
+      <div class="modal-hd">
+        <h3 style="margin:0; color:#ef5350; font-size:24px;">⚠ 強制キャンセル確認</h3>
+      </div>
+      <div class="modal-bd">
+        <p id="forceCancelMessage" class="force-cancel-msg"></p>
+        <div class="force-cancel-note">
+          ※お客様へ「管理者都合キャンセル」等のメールが自動送信されます。<br>
+          ※空きが出た場合、キャンセル待ちの繰り上げが行われます。<br>
+          <strong>この操作は取り消せません。</strong>
+        </div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn-outline" type="button" onclick="document.getElementById('forceCancelModal').style.display='none'">閉じる</button>
+        <button id="btnExecForceCancel" class="btn" type="button" style="background:#ef5350; color:#fff; border:none;">実行する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+
 </body>
 </html>
