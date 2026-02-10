@@ -664,3 +664,96 @@ body {
 #forceCancelModal { z-index: 9999; }
 .force-cancel-msg { font-weight: bold; color: #442c2e; margin-bottom: 16px; font-size: 18px; }
 .force-cancel-note { font-size: 14px; color: #ef5350; background: #ffebee; padding: 12px; border-radius: 8px; line-height: 1.5; }
+
+
+/* ...既存のコードの最後... */
+
+/* =========================================
+   スマホ向けカレンダー表示の最適化
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* メインコンテンツの余白を調整して横幅を可能な限り確保 */
+    main {
+        padding: 5px;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    /* カレンダー操作エリア */
+    .calendar-controls {
+        margin-bottom: 10px;
+        flex-wrap: wrap; /* ボタンなどがはみ出ないように折り返す */
+    }
+
+    .calendar-controls button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    #current-month-label {
+        font-size: 1rem;
+        margin: 0 10px;
+    }
+
+    /* カレンダーヘッダー（曜日） */
+    .calendar-header .header-cell {
+        font-size: 10px; /* 曜日表示を小さく */
+        padding: 5px 2px;
+        font-weight: normal;
+    }
+
+    /* 日付セル全体 */
+    .calendar-day {
+        min-height: 60px; /* セルの最低高さを半分程度に縮小 */
+        padding: 2px; /* パディングを詰める */
+    }
+
+    /* 日付の数字 */
+    .day-number {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+
+    /* レッスンアイテムの表示を非常にコンパクトにする */
+    .lesson-item {
+        padding: 2px 3px;
+        margin-bottom: 2px;
+        border-left-width: 3px; /* 左のカラーバーを少し細く */
+        font-size: 9px; /* 文字サイズを大幅に小さく */
+        line-height: 1.2;
+    }
+
+    /* レッスン時間 */
+    .lesson-time {
+        font-size: 9px;
+        margin-bottom: 0;
+        display: inline; /* 時間と名前を同じ行に表示 */
+        margin-right: 4px;
+        font-weight: bold;
+    }
+
+    /* レッスン名 */
+    .lesson-name {
+        font-size: 9px;
+        display: inline; /* 時間と同じ行に表示 */
+        font-weight: normal; /* 太字を解除してスペースを節約 */
+        word-break: break-all; /* 長い単語も強制的に折り返す */
+    }
+
+    /* 予約数表示 */
+    .lesson-capacity {
+        font-size: 8px; /* さらに小さく */
+        margin-top: 1px;
+        text-align: right; /* 右寄せにして一行に収める */
+    }
+    
+    /* 「他x件」の表示 */
+    .more-lessons {
+        font-size: 9px;
+        padding: 2px;
+        margin-top: 1px;
+    }
+}
