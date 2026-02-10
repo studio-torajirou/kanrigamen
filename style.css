@@ -669,91 +669,78 @@ body {
 /* ...既存のコードの最後... */
 
 /* =========================================
-   スマホ向けカレンダー表示の最適化
+   スマホ向けカレンダー表示の最適化（修正版）
    ========================================= */
 @media screen and (max-width: 768px) {
-    /* メインコンテンツの余白を調整して横幅を可能な限り確保 */
+    /* メインコンテンツの余白を詰める */
     main {
         padding: 5px;
     }
 
-    h2 {
-        font-size: 1.2rem;
-        margin-bottom: 10px;
+    /* カレンダーテーブルのレイアウト強制 */
+    #calendar-table {
+        table-layout: fixed; /* 列幅を均等に固定 */
+        width: 100%; /* 親要素に合わせて横幅いっぱい */
     }
 
-    /* カレンダー操作エリア */
-    .calendar-controls {
-        margin-bottom: 10px;
-        flex-wrap: wrap; /* ボタンなどがはみ出ないように折り返す */
-    }
-
-    .calendar-controls button {
-        padding: 5px 10px;
-        font-size: 12px;
-    }
-
-    #current-month-label {
-        font-size: 1rem;
-        margin: 0 10px;
-    }
-
-    /* カレンダーヘッダー（曜日） */
+    /* 曜日ヘッダーの調整 */
     .calendar-header .header-cell {
-        font-size: 10px; /* 曜日表示を小さく */
-        padding: 5px 2px;
-        font-weight: normal;
+        font-size: 10px; /* 文字サイズを縮小 */
+        padding: 2px 0; /* 上下の余白を最小限に */
     }
 
-    /* 日付セル全体 */
+    /* 日付セル全体の高さと余白調整 */
     .calendar-day {
-        min-height: 60px; /* セルの最低高さを半分程度に縮小 */
-        padding: 2px; /* パディングを詰める */
+        min-height: 50px; /* セルの最低高さを大幅に縮小 */
+        padding: 2px; /* 内側の余白を詰める */
+        vertical-align: top; /* 上詰めで表示 */
     }
 
     /* 日付の数字 */
     .day-number {
-        font-size: 11px;
-        margin-bottom: 2px;
+        font-size: 10px; /* 文字サイズを縮小 */
+        margin-bottom: 1px;
     }
 
-    /* レッスンアイテムの表示を非常にコンパクトにする */
+    /* レッスンアイテムの超コンパクト表示 */
     .lesson-item {
-        padding: 2px 3px;
-        margin-bottom: 2px;
-        border-left-width: 3px; /* 左のカラーバーを少し細く */
-        font-size: 9px; /* 文字サイズを大幅に小さく */
-        line-height: 1.2;
+        padding: 1px 2px; /* 余白を極限まで詰める */
+        margin-bottom: 1px;
+        border-left-width: 2px; /* 左のカラーバーを細く */
+        font-size: 8px; /* 文字サイズを限界まで小さく */
+        line-height: 1.1; /* 行間を詰める */
     }
 
-    /* レッスン時間 */
+    /* レッスン時間と名前を1行で表示 */
     .lesson-time {
-        font-size: 9px;
+        font-size: 8px;
         margin-bottom: 0;
-        display: inline; /* 時間と名前を同じ行に表示 */
-        margin-right: 4px;
-        font-weight: bold;
+        display: inline; /* インライン表示 */
+        margin-right: 2px;
     }
 
-    /* レッスン名 */
     .lesson-name {
-        font-size: 9px;
-        display: inline; /* 時間と同じ行に表示 */
-        font-weight: normal; /* 太字を解除してスペースを節約 */
-        word-break: break-all; /* 長い単語も強制的に折り返す */
+        font-size: 8px;
+        display: inline; /* インライン表示 */
+        font-weight: normal; /* 太字を解除 */
+        white-space: nowrap; /* 折り返しを禁止して1行に */
+        overflow: hidden; /* はみ出た部分を隠す */
+        text-overflow: ellipsis; /* 「...」で省略表示 */
+        max-width: 70%; /* 名前が長すぎる場合の最大幅制限 */
+        vertical-align: bottom; /* 高さ合わせ */
     }
 
-    /* 予約数表示 */
+    /* 予約数を非表示（スペース確保のため）または極小表示 */
     .lesson-capacity {
-        font-size: 8px; /* さらに小さく */
-        margin-top: 1px;
-        text-align: right; /* 右寄せにして一行に収める */
+        display: none; /* スペース節約のため非表示にする場合 */
+        /* もし表示したい場合は以下を使用し、lesson-nameのmax-widthを調整してください */
+        /* font-size: 7px; margin-top: 0; text-align: right; */
     }
     
-    /* 「他x件」の表示 */
+    /* 「他x件」の表示も小さく */
     .more-lessons {
-        font-size: 9px;
-        padding: 2px;
-        margin-top: 1px;
+        font-size: 8px;
+        padding: 1px;
+        margin-top: 0;
     }
 }
