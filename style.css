@@ -666,81 +666,63 @@ body {
 .force-cancel-note { font-size: 14px; color: #ef5350; background: #ffebee; padding: 12px; border-radius: 8px; line-height: 1.5; }
 
 
-/* ...既存のコードの最後... */
+/* ...既存コードの最後に追加... */
 
 /* =========================================
-   スマホ向けカレンダー表示の最適化（修正版）
+   スマホ用：ユーザー画面と同等の圧縮表示
    ========================================= */
 @media screen and (max-width: 768px) {
-    /* メインコンテンツの余白を詰める */
-    main {
-        padding: 5px;
-    }
-
-    /* カレンダーテーブルのレイアウト強制 */
+    
+    /* 1. カレンダーの表組みを強制的に固定 */
     #calendar-table {
-        table-layout: fixed; /* 列幅を均等に固定 */
-        width: 100%; /* 親要素に合わせて横幅いっぱい */
+        table-layout: fixed;
+        width: 100%;
     }
 
-    /* 曜日ヘッダーの調整 */
-    .calendar-header .header-cell {
-        font-size: 10px; /* 文字サイズを縮小 */
-        padding: 2px 0; /* 上下の余白を最小限に */
-    }
-
-    /* 日付セル全体の高さと余白調整 */
+    /* 2. セルの高さを強制的に抑える */
     .calendar-day {
-        min-height: 50px; /* セルの最低高さを大幅に縮小 */
-        padding: 2px; /* 内側の余白を詰める */
-        vertical-align: top; /* 上詰めで表示 */
+        height: auto !important; /* 高さ制限 */
+        min-height: 50px !important; /* ユーザー画面に合わせる */
+        padding: 2px !important;
+        vertical-align: top;
+        overflow: hidden !important; /* はみ出した部分は隠す（縦長防止の肝） */
     }
 
-    /* 日付の数字 */
+    /* 3. 日付の数字を小さく */
     .day-number {
-        font-size: 10px; /* 文字サイズを縮小 */
-        margin-bottom: 1px;
+        font-size: 10px;
+        margin-bottom: 2px;
     }
 
-    /* レッスンアイテムの超コンパクト表示 */
+    /* 4. レッスン枠（ユーザー画面の.cal-event相当） */
     .lesson-item {
-        padding: 1px 2px; /* 余白を極限まで詰める */
-        margin-bottom: 1px;
-        border-left-width: 2px; /* 左のカラーバーを細く */
-        font-size: 8px; /* 文字サイズを限界まで小さく */
-        line-height: 1.1; /* 行間を詰める */
+        margin-bottom: 2px !important;
+        padding: 1px 3px !important;
+        font-size: 9px !important; /* 極小フォント */
+        line-height: 1.2 !important;
+        border-left-width: 3px !important;
+        
+        /* ★ここが重要：改行を禁止して1行に収める */
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important; /* 入らない文字は「…」にする */
     }
 
-    /* レッスン時間と名前を1行で表示 */
+    /* 5. 時間・名前・人数を横並び＆簡略化 */
     .lesson-time {
-        font-size: 8px;
-        margin-bottom: 0;
-        display: inline; /* インライン表示 */
-        margin-right: 2px;
-    }
-
-    .lesson-name {
-        font-size: 8px;
-        display: inline; /* インライン表示 */
-        font-weight: normal; /* 太字を解除 */
-        white-space: nowrap; /* 折り返しを禁止して1行に */
-        overflow: hidden; /* はみ出た部分を隠す */
-        text-overflow: ellipsis; /* 「...」で省略表示 */
-        max-width: 70%; /* 名前が長すぎる場合の最大幅制限 */
-        vertical-align: bottom; /* 高さ合わせ */
-    }
-
-    /* 予約数を非表示（スペース確保のため）または極小表示 */
-    .lesson-capacity {
-        display: none; /* スペース節約のため非表示にする場合 */
-        /* もし表示したい場合は以下を使用し、lesson-nameのmax-widthを調整してください */
-        /* font-size: 7px; margin-top: 0; text-align: right; */
+        display: inline !important;
+        font-weight: bold;
+        margin-right: 3px;
+        font-size: 9px !important;
     }
     
-    /* 「他x件」の表示も小さく */
-    .more-lessons {
-        font-size: 8px;
-        padding: 1px;
-        margin-top: 0;
+    .lesson-name {
+        display: inline !important;
+        font-size: 9px !important;
+    }
+
+    /* 予約人数（スペースがなければ非表示、あれば極小表示） */
+    .lesson-capacity {
+        display: none !important; /* ユーザー画面に合わせて非表示にする */
     }
 }
