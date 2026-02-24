@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>スタジオ寅次郎 予約管理</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,7 +130,28 @@
         <button class="modal-close" type="button" onclick="document.getElementById('helpModal').style.display='none'">×</button>
       </div>
       <div class="modal-bd help-content">
+        <div style="margin-bottom: 10px;">
+          <h4 style="margin-bottom: 8px; color: var(--ink); border-bottom: 1px dashed var(--line); padding-bottom: 4px;">1. スケジュールの作り方</h4>
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px; color: var(--ink);">
+            ① 画面下部の「レッスンパッケージ」の<strong>「＋ 新規登録」</strong>から、レッスンの雛形（基本情報）を作ります。<br>
+            ② カレンダーの追加したい<strong>日付をタップ</strong>します。<br>
+            ③ <strong>「この日にレッスンを追加」</strong>を押し、作ったパッケージを選んで時間を設定して保存します。
+          </p>
+
+          <h4 style="margin-bottom: 8px; color: var(--ink); border-bottom: 1px dashed var(--line); padding-bottom: 4px;">2. 予約の確認・キャンセル処理</h4>
+          <p style="font-size: 15px; line-height: 1.6; margin-bottom: 20px; color: var(--ink);">
+            カレンダーのレッスン枠をタップすると、予約したお客様の一覧を確認できます。<br>
+            やむを得ない場合はここから<strong>「強制キャンセル」</strong>が可能です。<br>
+            <span style="font-size:13px; color:#ef5350;">※実行するとお客様に通知メールが送られ、キャンセル待ちがいる場合は自動で繰り上げられます。</span>
+          </p>
+
+          <h4 style="margin-bottom: 8px; color: var(--ink); border-bottom: 1px dashed var(--line); padding-bottom: 4px;">3. その他の機能</h4>
+          <ul style="font-size: 15px; line-height: 1.6; padding-left: 20px; margin-bottom: 10px; color: var(--ink);">
+            <li style="margin-bottom: 6px;"><strong>顧客台帳：</strong>お客様の連絡先や来店回数、予約履歴を検索・確認できます。</li>
+            <li><strong>スタジオ設定：</strong>お客様の予約画面に表示される紹介文やメールアドレスを変更できます。</li>
+          </ul>
         </div>
+      </div>
       <div class="modal-ft">
         <button class="btn" type="button" onclick="document.getElementById('helpModal').style.display='none'">閉じる</button>
       </div>
